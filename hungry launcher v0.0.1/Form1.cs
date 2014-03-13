@@ -32,6 +32,10 @@ namespace hungry_launcher_v0._0._1
         private void Form1_Load(object sender, EventArgs e)
         {
             checkBox1.Checked = Properties.Settings.Default.chBox;
+            checkBox2.Checked = Properties.Settings.Default.chBox2;
+            if (checkBox2.Checked == true) {
+                textBox2.Text = Properties.Settings.Default.Textbox2;
+            }
             textBox1.Text = Properties.Settings.Default.Textbox;
         }
 
@@ -91,6 +95,23 @@ namespace hungry_launcher_v0._0._1
         {
             Properties.Settings.Default.chBox = checkBox1.Checked;
             Properties.Settings.Default.Save();
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox2 = checkBox2.Checked;
+            Properties.Settings.Default.Save();
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == true)
+            {
+                Properties.Settings.Default.Textbox2 = textBox2.Text;
+                Properties.Settings.Default.Save();
+            }
+
         }
 
     }
