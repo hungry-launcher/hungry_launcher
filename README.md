@@ -5,6 +5,8 @@ Launcher for minecraft
 
 TO DO LIST:
 
+      Better natives path;
+
       Tab for setrtings;
 
       Multi versions support;
