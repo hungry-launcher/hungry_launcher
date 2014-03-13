@@ -23,7 +23,6 @@ namespace hungry_launcher_v0._0._1
         {
             InitializeComponent();
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
         
@@ -74,7 +73,6 @@ namespace hungry_launcher_v0._0._1
 
             this.Close();
         }
-
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.Textbox = textBox1.Text;
@@ -113,7 +111,6 @@ namespace hungry_launcher_v0._0._1
             }
 
         }
-
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -121,13 +118,9 @@ namespace hungry_launcher_v0._0._1
 
     }
 
-
-
-
-
-
-
-
+    /// <summary>
+    ///                             GETJAVA CLASS
+    /// </summary>
 
     public class getjava
     {

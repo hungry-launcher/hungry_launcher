@@ -34,5 +34,41 @@ namespace hungry_launcher_v0._0._1.Properties {
                 this["chBox"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Textbox {
+            get {
+                return ((string)(this["Textbox"]));
+            }
+            set {
+                this["Textbox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Textbox2 {
+            get {
+                return ((string)(this["Textbox2"]));
+            }
+            set {
+                this["Textbox2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox2 {
+            get {
+                return ((bool)(this["chBox2"]));
+            }
+            set {
+                this["chBox2"] = value;
+            }
+        }
     }
 }
