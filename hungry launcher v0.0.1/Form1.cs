@@ -17,7 +17,7 @@ namespace hungry_launcher_v0._0._1
 {
     public partial class Form1 : Form
     {
-        string mdir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\hungry";
+        string mdir;
         bool console;
         public Form1()
         {
@@ -30,6 +30,7 @@ namespace hungry_launcher_v0._0._1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            mdir = Properties.Settings.Default.mdir;
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             if (checkBox2.Checked == true) {
@@ -41,7 +42,6 @@ namespace hungry_launcher_v0._0._1
         private void button1_Click(object sender, EventArgs e)
         {
             string javahome;
-            
             javahome = getjava.getjavapath();
             if (javahome == null)
             {
@@ -49,32 +49,38 @@ namespace hungry_launcher_v0._0._1
             }
             else
             {
-                console = checkBox1.Checked;
-
-                string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                char a = '"';
-                string username = textBox1.Text;
-           //     string token = "--session token:"; //+ tokenGenerated;
-                string launch1 = " -Xms1G -Xmx1G -Djava.library.path={0}\\versions\\1.6.4_Forge_LL\\natives -cp "; //Begin
-                string launch2 = "{0}\\libraries\\net\\sf\\jopt-simple\\jopt-simple\\4.5\\jopt-simple-4.5.jar;{0}\\libraries\\com\\paulscode\\codecjorbis\\20101023\\codecjorbis-20101023.jar;{0}\\libraries\\com\\paulscode\\codecwav\\20101023\\codecwav-20101023.jar;{0}\\libraries\\com\\paulscode\\libraryjavasound\\20101123\\libraryjavasound-20101123.jar;";   //Begin and Mem and Sound  syst
-                string launch3 = "{0}\\libraries\\com\\paulscode\\librarylwjglopenal\\20100824\\librarylwjglopenal-20100824.jar;{0}\\libraries\\com\\paulscode\\soundsystem\\20120107\\soundsystem-20120107.jar;{0}\\libraries\\argo\\argo\\2.25_fixed\\argo-2.25_fixed.jar;{0}\\libraries\\org\\bouncycastle\\bcprov-jdk15on\\1.47\\bcprov-jdk15on-1.47.jar;{0}\\libraries\\com\\google\\guava\\guava\\14.0\\guava-14.0.jar;{0}\\libraries\\org\\apache\\commons\\commons-lang3\\3.1\\commons-lang3-3.1.jar;";               //Sound Syst and argo and guava and apche
-                string launch4 = "{0}\\libraries\\commons-io\\commons-io\\2.4\\commons-io-2.4.jar;{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;{0}\\libraries\\com\\google\\code\\gson\\gson\\2.2.2\\gson-2.2.2.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl-platform\\2.9.0\\lwjgl-platform-2.9.0-natives-windows.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\1.6.4_Forge_LL\\1.6.4_Forge_LL.jar;";    //LWJGl and GSON and Version
-                string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;{0}\\libraries\\org\\ow2\\asm\\asm-all\\4.1\\asm-all-4.1.jar;{0}\\libraries\\org\\scala-lang\\scala-library\\2.10.2\\scala-library-2.10.2.jar;{0}\\libraries\\org\\scala-lang\\scala-compiler\\2.10.2\\scala-compiler-2.10.2.jar;{0}\\libraries\\com\\mumfrey\\liteloader\\1.6.4\\liteloader-1.6.4.jar;{0}\\libraries\\net\\minecraft\\launchwrapper\\1.8\\launchwrapper-1.8.jar;{0}\\libraries\\lzma\\lzma\\0.0.1\\lzma-0.0.1.jar"; // Forge and Liteloader
-                string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version 1.6.4" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
-                string launch = launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
-                launch = string.Format(launch, mdir);
-                if (console == true)
+                if (mdir == null)
                 {
-                    ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
-                    Process.Start(mcStartInfo);
+                    MessageBox.Show("Не указана папка с игрой");
                 }
                 else
                 {
-                    ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
-                    Process.Start(mcStartInfo);
-                }
+                    console = checkBox1.Checked;
 
-                this.Close();
+                    char a = '"';
+                    string username = textBox1.Text;
+                    //     string token = "--session token:"; //+ tokenGenerated;
+                    string launch1 = " -Xms1G -Xmx1G -Djava.library.path={0}\\versions\\1.6.4_Forge_LL\\natives -cp "; //Begin
+                    string launch2 = "{0}\\libraries\\net\\sf\\jopt-simple\\jopt-simple\\4.5\\jopt-simple-4.5.jar;{0}\\libraries\\com\\paulscode\\codecjorbis\\20101023\\codecjorbis-20101023.jar;{0}\\libraries\\com\\paulscode\\codecwav\\20101023\\codecwav-20101023.jar;{0}\\libraries\\com\\paulscode\\libraryjavasound\\20101123\\libraryjavasound-20101123.jar;";   //Begin and Mem and Sound  syst
+                    string launch3 = "{0}\\libraries\\com\\paulscode\\librarylwjglopenal\\20100824\\librarylwjglopenal-20100824.jar;{0}\\libraries\\com\\paulscode\\soundsystem\\20120107\\soundsystem-20120107.jar;{0}\\libraries\\argo\\argo\\2.25_fixed\\argo-2.25_fixed.jar;{0}\\libraries\\org\\bouncycastle\\bcprov-jdk15on\\1.47\\bcprov-jdk15on-1.47.jar;{0}\\libraries\\com\\google\\guava\\guava\\14.0\\guava-14.0.jar;{0}\\libraries\\org\\apache\\commons\\commons-lang3\\3.1\\commons-lang3-3.1.jar;";               //Sound Syst and argo and guava and apche
+                    string launch4 = "{0}\\libraries\\commons-io\\commons-io\\2.4\\commons-io-2.4.jar;{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;{0}\\libraries\\com\\google\\code\\gson\\gson\\2.2.2\\gson-2.2.2.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl-platform\\2.9.0\\lwjgl-platform-2.9.0-natives-windows.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\1.6.4_Forge_LL\\1.6.4_Forge_LL.jar;";    //LWJGl and GSON and Version
+                    string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;{0}\\libraries\\org\\ow2\\asm\\asm-all\\4.1\\asm-all-4.1.jar;{0}\\libraries\\org\\scala-lang\\scala-library\\2.10.2\\scala-library-2.10.2.jar;{0}\\libraries\\org\\scala-lang\\scala-compiler\\2.10.2\\scala-compiler-2.10.2.jar;{0}\\libraries\\com\\mumfrey\\liteloader\\1.6.4\\liteloader-1.6.4.jar;{0}\\libraries\\net\\minecraft\\launchwrapper\\1.8\\launchwrapper-1.8.jar;{0}\\libraries\\lzma\\lzma\\0.0.1\\lzma-0.0.1.jar"; // Forge and Liteloader
+                    string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version 1.6.4" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
+                    string launch = launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
+                    launch = string.Format(launch, mdir);
+                    if (console == true)
+                    {
+                        ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
+                        Process.Start(mcStartInfo);
+                    }
+                    else
+                    {
+                        ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
+                        Process.Start(mcStartInfo);
+                    }
+
+                    this.Close();
+                }
             }
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -89,8 +95,9 @@ namespace hungry_launcher_v0._0._1
             using (var dialog = new FolderBrowserDialog())
                 if (dialog.ShowDialog() == DialogResult.OK)
                  path = dialog.SelectedPath;
-            mdir = path;
-            
+             mdir = path;
+             Properties.Settings.Default.mdir = mdir;
+             Properties.Settings.Default.Save();
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
