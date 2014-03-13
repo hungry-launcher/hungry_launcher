@@ -114,6 +114,11 @@ namespace hungry_launcher_v0._0._1
 
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
     }
 
 
