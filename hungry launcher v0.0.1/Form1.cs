@@ -13,7 +13,6 @@ using System.Net;
 using System.IO;
 using Microsoft.Win32;
 
-
 namespace hungry_launcher_v0._0._1
 {
     public partial class Form1 : Form
@@ -33,6 +32,7 @@ namespace hungry_launcher_v0._0._1
         private void Form1_Load(object sender, EventArgs e)
         {
             checkBox1.Checked = Properties.Settings.Default.chBox;
+            textBox1.Text = Properties.Settings.Default.Textbox;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -73,7 +73,8 @@ namespace hungry_launcher_v0._0._1
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-
+            Properties.Settings.Default.Textbox = textBox1.Text;
+            Properties.Settings.Default.Save();
         }
 
         private void button2_Click_1(object sender, EventArgs e)
