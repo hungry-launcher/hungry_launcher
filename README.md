@@ -10,6 +10,8 @@ TO DO LIST:
       Multi versions support;
 
       Better design; 
+      
+      Using progress bar;
 
       Auto upload minecraft if emty; 
 
