@@ -20,15 +20,15 @@ namespace hungry_launcher_v0._0._1
     public partial class Form1 : Form
     {
         string mdir;
-        string path;
+        string[] mver;
         bool console,autoclose;
+
         public Form1()
         {
             InitializeComponent();
         }
         private void button2_Click(object sender, EventArgs e)
-        {
-        
+        {       
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -41,13 +41,22 @@ namespace hungry_launcher_v0._0._1
                 textBox2.Text = Properties.Settings.Default.Textbox2;
             }
             textBox1.Text = Properties.Settings.Default.Textbox;
+
+            mver = utils.mineversions(mdir);
+            if (mver != null)
+            {
+                foreach (Object i in mver)
+                {
+                    comboBox1.Items.Add(i);
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {   
             string javahome;
             long memory = 0;
-            javahome = getjava.getjavapath();
+            javahome = utils.getjavapath();
             if (javahome == null)
             {
                 MessageBox.Show("Java не найдена");
@@ -126,6 +135,7 @@ namespace hungry_launcher_v0._0._1
                 }
             }
         }
+
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.Textbox = textBox1.Text;
@@ -134,6 +144,7 @@ namespace hungry_launcher_v0._0._1
 
         private void button2_Click_1(object sender, EventArgs e)
         {
+            string path;
             using (var dialog = new FolderBrowserDialog())
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
@@ -159,7 +170,6 @@ namespace hungry_launcher_v0._0._1
         {
             Properties.Settings.Default.chBox2 = checkBox2.Checked;
             Properties.Settings.Default.Save();
-
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -173,12 +183,10 @@ namespace hungry_launcher_v0._0._1
         }
         private void label1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
-
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -186,13 +194,17 @@ namespace hungry_launcher_v0._0._1
             Properties.Settings.Default.chBox3 = checkBox3.Checked;
             Properties.Settings.Default.Save();
         }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
     }
 
     /// <summary>
     ///                             GETJAVA CLASS
     /// </summary>
 
-    public class getjava
+    public class utils
     {
         public static string getjavapath()
         {
@@ -219,6 +231,29 @@ namespace hungry_launcher_v0._0._1
                     javapath = homeKey.GetValue("JavaHome").ToString();
             }
             return javapath;
+        }
+
+        public static string[] mineversions(string mdir){
+
+            string [] mver = null;
+            int j = 0;
+            string versions = "{0}\\versions";
+            versions = string.Format(versions, mdir);
+            DirectoryInfo verpath = new DirectoryInfo(versions);
+            FileInfo[] vers =  verpath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in vers) {
+                for (int i = 0; i <= 9; i++)
+                {
+                   
+                    if (file.Name.Contains("1."+i))
+                    {
+                        mver=new []{file.Name};
+                        j++;
+                    }
+
+                }
+            }
+            return mver;
         }
 
     }
