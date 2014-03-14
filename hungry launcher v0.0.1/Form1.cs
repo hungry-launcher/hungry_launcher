@@ -44,8 +44,6 @@ namespace hungry_launcher_v0._0._1
 
         private void button1_Click(object sender, EventArgs e)
         {   
-            int count1 = 0;
-            long mem = 0;
             string javahome;
             javahome = getjava.getjavapath();
             if (javahome == null)
