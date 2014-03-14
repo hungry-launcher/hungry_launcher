@@ -82,5 +82,17 @@ namespace hungry_launcher_v0._0._1.Properties {
                 this["mdir"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox3 {
+            get {
+                return ((bool)(this["chBox3"]));
+            }
+            set {
+                this["chBox3"] = value;
+            }
+        }
     }
 }

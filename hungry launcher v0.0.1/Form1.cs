@@ -21,7 +21,7 @@ namespace hungry_launcher_v0._0._1
     {
         string mdir;
         string path;
-        bool console;
+        bool console,autoclose;
         public Form1()
         {
             InitializeComponent();
@@ -36,6 +36,7 @@ namespace hungry_launcher_v0._0._1
             mdir = Properties.Settings.Default.mdir;
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
+            checkBox3.Checked = Properties.Settings.Default.chBox3;
             if (checkBox2.Checked == true) {
                 textBox2.Text = Properties.Settings.Default.Textbox2;
             }
@@ -45,6 +46,7 @@ namespace hungry_launcher_v0._0._1
         private void button1_Click(object sender, EventArgs e)
         {   
             string javahome;
+            long memory = 0;
             javahome = getjava.getjavapath();
             if (javahome == null)
             {
@@ -58,6 +60,7 @@ namespace hungry_launcher_v0._0._1
                 }
                 else
                 {
+                    autoclose = checkBox3.Checked;
                     console = checkBox1.Checked;
 
                     char a = '"';
@@ -87,15 +90,39 @@ namespace hungry_launcher_v0._0._1
                     {
                         ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);              
                         Process.Start(mcStartInfo);
+                        if (autoclose == true)
+                        {
+                            while (memory < 300000)
+                            {
+                                System.Diagnostics.Process[] pr = Process.GetProcessesByName("java");
+                                foreach (Process process in pr)
+                                {
+                                    memory = process.WorkingSet64 / 1024;
+                                }
+
+                            }
+                            this.Close();
+                        }
                     }
                     else
                     {
                         ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
                         Process.Start(mcStartInfo);
-                    }
+                        if (autoclose == true)
+                        {
+                            while (memory < 300000)
+                            {
+                                System.Diagnostics.Process[] pr = Process.GetProcessesByName("javaw");
+                                foreach (Process process in pr)
+                                {
+                                    memory = process.WorkingSet64 / 1024;
+                                }
 
-                   Thread.Sleep(1000);  
-                   this.Close();
+                            }
+                            this.Close();
+                        }
+                    }
+                   
                 }
             }
         }
@@ -147,6 +174,17 @@ namespace hungry_launcher_v0._0._1
         private void label1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox3 = checkBox3.Checked;
+            Properties.Settings.Default.Save();
         }
     }
 
