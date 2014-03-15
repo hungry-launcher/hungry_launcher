@@ -61,7 +61,6 @@ namespace hungry_launcher_v0._0._1
             }
             textBox1.Text = Properties.Settings.Default.Textbox;
 
-            comboBox1.Text = Properties.Settings.Default.combobox;
             mver = utils.mineversions(mdir);
             if (mver != null)
             {
@@ -70,6 +69,7 @@ namespace hungry_launcher_v0._0._1
                     comboBox1.Items.Add(i);  
                 }                        
             }
+            comboBox1.Text = Properties.Settings.Default.combobox;
         }
 
         private void button1_Click(object sender, EventArgs e)
