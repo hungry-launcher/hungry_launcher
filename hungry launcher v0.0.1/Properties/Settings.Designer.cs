@@ -94,5 +94,17 @@ namespace hungry_launcher_v0._0._1.Properties {
                 this["chBox3"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string combobox {
+            get {
+                return ((string)(this["combobox"]));
+            }
+            set {
+                this["combobox"] = value;
+            }
+        }
     }
 }
