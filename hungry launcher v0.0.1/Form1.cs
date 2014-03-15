@@ -35,6 +35,24 @@ namespace hungry_launcher_v0._0._1
         private void Form1_Load(object sender, EventArgs e)
         {
             mdir = Properties.Settings.Default.mdir;
+            if (mdir == "")
+            {
+
+                            string path;
+            using (var dialog = new FolderBrowserDialog())
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    path = dialog.SelectedPath;
+                    mdir = path;
+                }
+
+                else
+                {
+                    path = mdir;
+                }
+             Properties.Settings.Default.mdir = mdir;
+
+            }
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             checkBox3.Checked = Properties.Settings.Default.chBox3;
@@ -105,7 +123,7 @@ namespace hungry_launcher_v0._0._1
                         Process.Start(mcStartInfo);
                         if (autoclose == true)
                         {
-                            while (memory < 300000)
+                            while (memory < 400000)
                             {
                                 System.Diagnostics.Process[] pr = Process.GetProcessesByName("java");
                                 foreach (Process process in pr)
@@ -123,7 +141,7 @@ namespace hungry_launcher_v0._0._1
                         Process.Start(mcStartInfo);
                         if (autoclose == true)
                         {
-                            while (memory < 300000)
+                            while (memory < 400000)
                             {
                                 System.Diagnostics.Process[] pr = Process.GetProcessesByName("javaw");
                                 foreach (Process process in pr)
@@ -201,6 +219,20 @@ namespace hungry_launcher_v0._0._1
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            Properties.Settings.Default.combobox = comboBox1.Text;
+            Properties.Settings.Default.Save();
+        }
+        private void comboBox1_Dropdown(object sender, System.EventArgs e)
+        {
+            mver = utils.mineversions(mdir);
+            comboBox1.Items.Clear();
+            if (mver != null)
+            {
+                foreach (Object i in mver)
+                {
+                    comboBox1.Items.Add(i);
+                }
+            }
             Properties.Settings.Default.combobox = comboBox1.Text;
             Properties.Settings.Default.Save();
         }

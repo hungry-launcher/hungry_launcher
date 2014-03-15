@@ -26,6 +26,8 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
+        /// 
+
         private void InitializeComponent()
         {
             this.button1 = new System.Windows.Forms.Button();
@@ -171,6 +173,7 @@
             this.comboBox1.Sorted = true;
             this.comboBox1.TabIndex = 12;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+			this.comboBox1.DropDown += new System.EventHandler(this.comboBox1_Dropdown);
             // 
             // label3
             // 
