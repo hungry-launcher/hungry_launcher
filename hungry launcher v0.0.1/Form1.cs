@@ -34,25 +34,25 @@ namespace hungry_launcher_v0._0._1
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            mdir = Properties.Settings.Default.mdir;
-            if (mdir == "")
+            string path;
+            mdir = Properties.Settings.Default.mdir;          
+
+            if (mdir == null)
             {
+                using (var dialog = new FolderBrowserDialog())
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        path = dialog.SelectedPath;
+                        mdir = path;
+                    }
 
-                            string path;
-            using (var dialog = new FolderBrowserDialog())
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    path = dialog.SelectedPath;
-                    mdir = path;
-                }
-
-                else
-                {
-                    path = mdir;
-                }
-             Properties.Settings.Default.mdir = mdir;
-
+                    else
+                    {
+                        path = mdir;
+                    }
+                Properties.Settings.Default.mdir = mdir;
             }
+
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             checkBox3.Checked = Properties.Settings.Default.chBox3;
@@ -180,6 +180,7 @@ namespace hungry_launcher_v0._0._1
                 }
              Properties.Settings.Default.mdir = mdir;
              Properties.Settings.Default.Save();
+             comboBox1.Text = null;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -273,25 +274,29 @@ namespace hungry_launcher_v0._0._1
             return javapath;
         }
 
-        public static string[] mineversions(string mdir){
-
-            List<string> mver = new List<string>();
+        public static string[] mineversions(string mdir)
+        {
             string versions = "{0}\\versions\\";
             versions = string.Format(versions, mdir);
-            DirectoryInfo verpath = new DirectoryInfo(versions);
-            FileInfo[] vers =  verpath.GetFiles("*.jar", SearchOption.AllDirectories);
-                    foreach (FileInfo file in vers)
+            if (Directory.Exists(versions))
+            {
+
+                List<string> mver = new List<string>();
+                DirectoryInfo verpath = new DirectoryInfo(versions);
+                FileInfo[] vers = verpath.GetFiles("*.jar", SearchOption.AllDirectories);
+                foreach (FileInfo file in vers)
+                {
+                    for (int i = 0; i <= 9; i++)
                     {
-                        for (int i = 0; i <= 9; i++)
+                        if (file.Name.Contains("1." + i.ToString()) && (file.DirectoryName.Equals(versions + Truncates(file.Name))))
                         {
-                            if (file.Name.Contains("1." + i.ToString()) && (file.DirectoryName.Equals(versions+ Truncates(file.Name))))  
-                            {                
-                                mver.Add(Truncates(file.Name));
-                            }
+                            mver.Add(Truncates(file.Name));
                         }
                     }
-
-            return mver.ToArray();
+                }
+                return mver.ToArray();
+            }
+            else return null;
         }
 
         public static string Truncates(string trunc) {
