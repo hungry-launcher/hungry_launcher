@@ -45,6 +45,8 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // button1
@@ -140,7 +142,6 @@
             this.label1.TabIndex = 8;
             this.label1.Text = "   Login    ";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -210,6 +211,27 @@
             this.comboBox2.Size = new System.Drawing.Size(153, 21);
             this.comboBox2.Sorted = true;
             this.comboBox2.TabIndex = 15;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(556, 70);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.Size = new System.Drawing.Size(166, 20);
+            this.textBox3.TabIndex = 16;
+            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            this.textBox3.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox3_KeyPress);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.Color.White;
+            this.label5.Location = new System.Drawing.Point(460, 73);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(90, 13);
+            this.label5.TabIndex = 17;
+            this.label5.Text = "Allocated memory";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Form1
             // 
@@ -217,6 +239,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.RoyalBlue;
             this.ClientSize = new System.Drawing.Size(734, 511);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.textBox3);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -261,6 +285,8 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Label label5;
     }
 }
 
