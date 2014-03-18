@@ -5,9 +5,11 @@ Launcher for minecraft
 
 TO DO LIST:
 
-      Better natives path;
+      Better natives path; [+]
+	  
+	  Auto libraries detection; []
 
-      Tab for setrtings;
+      Tab for settings;
 
       Multi versions support;
 
@@ -22,5 +24,6 @@ TO DO LIST:
       Own site login support; 
 
       Online and offline mode; 
+	  
 
       Another? 

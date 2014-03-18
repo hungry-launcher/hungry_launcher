@@ -72,7 +72,7 @@ namespace hungry_launcher_v0._0._1
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
 
-            utils.Launch("1","1",mdir);
+            utils.Launch("1","1",mdir,"1","1");
            
         }
 
@@ -276,7 +276,7 @@ namespace hungry_launcher_v0._0._1
 
 
     /// <summary>
-    ///                             GETJAVA CLASS
+    ///                             UTILITS CLASS
     /// </summary>
 
     public class utils
@@ -348,10 +348,12 @@ namespace hungry_launcher_v0._0._1
         }
 
 
-        public static string Launch(string username, string version, string mdir)
+        public static string Launch(string username, string version, string mdir, string vers, string client)
         {
             char a = '"';
-            string launch, natives, jopt, argo, bouncy, guava, apache;
+            string launch, natives, jopt, argo, bouncy, guava, apache, comonio, gson, asm, scala, wrap, lzma;
+            string scalac = null;
+            string scalal = null;
 
             natives = "{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl-platform\\";
             natives = String.Format(natives, mdir);                
@@ -430,8 +432,6 @@ namespace hungry_launcher_v0._0._1
                 }
             }
 
-            MessageBox.Show(bouncy);
-
             guava = "{0}\\libraries\\com\\google\\guava\\guava\\";
             guava = String.Format(guava, mdir);
             DirectoryInfo guavapath = new DirectoryInfo(guava);                    //Guava detection                                                                                     
@@ -456,7 +456,7 @@ namespace hungry_launcher_v0._0._1
 
             apache = "{0}\\libraries\\org\\apache\\commons\\commons-lang3\\";
             apache = String.Format(apache, mdir);
-            DirectoryInfo apachepath = new DirectoryInfo(apache);                    //Guava detection                                                                                     
+            DirectoryInfo apachepath = new DirectoryInfo(apache);                    //Apache detection                                                                                     
             FileInfo[] apaches = apachepath.GetFiles("*.jar", SearchOption.AllDirectories);
             foreach (FileInfo file in apaches)
             {
@@ -472,18 +472,139 @@ namespace hungry_launcher_v0._0._1
                 }
             }
 
+            comonio = "{0}\\libraries\\commons-io\\commons-io\\";
+            comonio = String.Format(comonio, mdir);
+            DirectoryInfo comoniopath = new DirectoryInfo(comonio);                    //Comonio detection                                                                                     
+            FileInfo[] comonios = comoniopath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in comonios)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        if (file.Name.Contains("commons-io-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(comonio + i.ToString() + "." + j.ToString()))
+                        {
+                            comonio = file.DirectoryName + "\\" + file.Name;
+                        }
+                    }
+                }
+            }
 
-            
+            gson = "{0}\\libraries\\com\\google\\code\\gson\\gson\\";
+            gson = String.Format(gson, mdir);
+            DirectoryInfo gsonpath = new DirectoryInfo(gson);                    //Gson detection                                                                                     
+            FileInfo[] gsons = gsonpath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in gsons)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        for (int k = 0; k <= 9; k++)
+                        {
+                            if (file.Name.Contains("gson-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(gson + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                gson = file.DirectoryName + "\\" + file.Name;
+                            }
+                        }
+                    }
+                }
+            }
+
+            asm = "{0}\\libraries\\org\\ow2\\asm\\asm-all\\";
+            asm = String.Format(asm, mdir);
+            DirectoryInfo asmpath = new DirectoryInfo(asm);                    //Asm detection                                                                                     
+            FileInfo[] asms = asmpath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in asms)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        if (file.Name.Contains("asm-all-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(asm + i.ToString() + "." + j.ToString()))
+                            {
+                                asm = file.DirectoryName + "\\" + file.Name;
+                            }
+                    }
+                }
+            }
+
+            scala = "{0}\\libraries\\org\\scala-lang\\";
+            scala = String.Format(scala, mdir);
+            DirectoryInfo scalapath = new DirectoryInfo(scala);                    //SCALA detection                                                                                     
+            FileInfo[] scalas = scalapath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in scalas)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 10; j++)
+                    {
+                        if (file.Name.Contains("scala-library-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Contains(scala + "scala-library\\" + i.ToString() + "." + j.ToString()))
+                        {
+                            scalal = file.DirectoryName + "\\" + file.Name;
+                        }
+                        if (file.Name.Contains("scala-compiler-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Contains(scala + "scala-compiler\\" + i.ToString() + "." + j.ToString()))
+                        {
+                            scalac = file.DirectoryName + "\\" + file.Name;
+                        }
+                    }
+                }
+            }
+
+            wrap = "{0}\\libraries\\net\\minecraft\\launchwrapper\\";
+            wrap = String.Format(wrap, mdir);
+            DirectoryInfo wrapath = new DirectoryInfo(wrap);                    //Launchwrapper detection                                                                                     
+            FileInfo[] wraps = wrapath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in wraps)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        if (file.Name.Contains("launchwrapper-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(wrap + i.ToString() + "." + j.ToString()))
+                        {
+                            wrap = file.DirectoryName + "\\" + file.Name;
+                        }
+                    }
+                }
+            }
+
+            lzma = "{0}\\libraries\\lzma\\lzma\\  0.0.1\\lzma-0.0.1.jar";
+            lzma = String.Format(lzma, mdir);
+            DirectoryInfo lzmapath = new DirectoryInfo(lzma);                    //lzma detection                                                                                     
+            FileInfo[] lzmas = wrapath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in lzmas)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        for (int k = 0; k <= 9; k++)
+                        {
+                            if (file.Name.Contains("lzma-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(lzma + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                lzma = file.DirectoryName + "\\" + file.Name;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            MessageBox.Show(lzma);
+
             string launch1 = " -Djava.library.path="+natives+" -cp ";
             string launch2 = jopt+";{0}\\libraries\\com\\paulscode\\codecjorbis\\20101023\\codecjorbis-20101023.jar;{0}\\libraries\\com\\paulscode\\codecwav\\20101023\\codecwav-20101023.jar;{0}\\libraries\\com\\paulscode\\libraryjavasound\\20101123\\libraryjavasound-20101123.jar;";   //Begin and Mem and Sound  syst
             string launch3 = "{0}\\libraries\\com\\paulscode\\librarylwjglopenal\\20100824\\librarylwjglopenal-20100824.jar;{0}\\libraries\\com\\paulscode\\soundsystem\\20120107\\soundsystem-20120107.jar;" + argo + ";" + bouncy + ";" + guava + ";" + apache + ";";               //Sound Syst and argo and guava and apche
-            string launch4 = "{0}\\libraries\\commons-io\\commons-io\\2.4\\commons-io-2.4.jar;{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;{0}\\libraries\\com\\google\\code\\gson\\gson\\2.2.2\\gson-2.2.2.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
-            string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;{0}\\libraries\\org\\ow2\\asm\\asm-all\\4.1\\asm-all-4.1.jar;{0}\\libraries\\org\\scala-lang\\scala-library\\2.10.2\\scala-library-2.10.2.jar;{0}\\libraries\\org\\scala-lang\\scala-compiler\\2.10.2\\scala-compiler-2.10.2.jar;{0}\\libraries\\com\\mumfrey\\liteloader\\1.6.4\\liteloader-1.6.4.jar;{0}\\libraries\\net\\minecraft\\launchwrapper\\1.8\\launchwrapper-1.8.jar;{0}\\libraries\\lzma\\lzma\\0.0.1\\lzma-0.0.1.jar"; // Forge and Liteloader
-            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version 1.6.4" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
+
+            string launch4 =  comonio+";{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;"+gson+";{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
+            string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;"+asm+";"+scalal+";"+scalac+";"+wrap+";"+lzma; // Forge and Liteloader
+            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version {3}" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
 
 
             launch = launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
             return null;
         }
+
     }
 }
