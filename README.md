@@ -7,7 +7,7 @@ TO DO LIST:
 
       Better natives path; [+]
 	  
-	  Auto libraries detection; []
+	  Auto libraries detection; [+?]
 
       Tab for settings;
 
@@ -25,5 +25,4 @@ TO DO LIST:
 
       Online and offline mode; 
 	  
-
       Another? 

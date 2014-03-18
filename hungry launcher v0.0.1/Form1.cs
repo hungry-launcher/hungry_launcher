@@ -71,8 +71,6 @@ namespace hungry_launcher_v0._0._1
                 }                        
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
-
-            utils.Launch("1","1",mdir,"1.6.4","1");
            
         }
 
@@ -131,14 +129,16 @@ namespace hungry_launcher_v0._0._1
 
                             string memorys = " -Xms512M -Xmx{0}";
                             memorys = string.Format(memorys, alocmem);
-                            string launch1 = " -Djava.library.path={0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl-platform\\2.9.0\\natives -cp ";
-                            string launch2 = "{0}\\libraries\\net\\sf\\jopt-simple\\jopt-simple\\4.5\\jopt-simple-4.5.jar;{0}\\libraries\\com\\paulscode\\codecjorbis\\20101023\\codecjorbis-20101023.jar;{0}\\libraries\\com\\paulscode\\codecwav\\20101023\\codecwav-20101023.jar;{0}\\libraries\\com\\paulscode\\libraryjavasound\\20101123\\libraryjavasound-20101123.jar;";   //Begin and Mem and Sound  syst
-                            string launch3 = "{0}\\libraries\\com\\paulscode\\librarylwjglopenal\\20100824\\librarylwjglopenal-20100824.jar;{0}\\libraries\\com\\paulscode\\soundsystem\\20120107\\soundsystem-20120107.jar;{0}\\libraries\\argo\\argo\\2.25_fixed\\argo-2.25_fixed.jar;{0}\\libraries\\org\\bouncycastle\\bcprov-jdk15on\\1.47\\bcprov-jdk15on-1.47.jar;{0}\\libraries\\com\\google\\guava\\guava\\14.0\\guava-14.0.jar;{0}\\libraries\\org\\apache\\commons\\commons-lang3\\3.1\\commons-lang3-3.1.jar;";               //Sound Syst and argo and guava and apche
-                            string launch4 = "{0}\\libraries\\commons-io\\commons-io\\2.4\\commons-io-2.4.jar;{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;{0}\\libraries\\com\\google\\code\\gson\\gson\\2.2.2\\gson-2.2.2.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
-                            string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;{0}\\libraries\\org\\ow2\\asm\\asm-all\\4.1\\asm-all-4.1.jar;{0}\\libraries\\org\\scala-lang\\scala-library\\2.10.2\\scala-library-2.10.2.jar;{0}\\libraries\\org\\scala-lang\\scala-compiler\\2.10.2\\scala-compiler-2.10.2.jar;{0}\\libraries\\com\\mumfrey\\liteloader\\1.6.4\\liteloader-1.6.4.jar;{0}\\libraries\\net\\minecraft\\launchwrapper\\1.8\\launchwrapper-1.8.jar;{0}\\libraries\\lzma\\lzma\\0.0.1\\lzma-0.0.1.jar"; // Forge and Liteloader
-                            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version 1.6.4" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
-                            string launch = memorys + launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
-                            launch = string.Format(launch, mdir, mversion);
+                           // string launch1 = " -Djava.library.path={0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl-platform\\2.9.0\\natives -cp ";
+                          //  string launch2 = "{0}\\libraries\\net\\sf\\jopt-simple\\jopt-simple\\4.5\\jopt-simple-4.5.jar;{0}\\libraries\\com\\paulscode\\codecjorbis\\20101023\\codecjorbis-20101023.jar;{0}\\libraries\\com\\paulscode\\codecwav\\20101023\\codecwav-20101023.jar;{0}\\libraries\\com\\paulscode\\libraryjavasound\\20101123\\libraryjavasound-20101123.jar;";   //Begin and Mem and Sound  syst
+                          //  string launch3 = "{0}\\libraries\\com\\paulscode\\librarylwjglopenal\\20100824\\librarylwjglopenal-20100824.jar;{0}\\libraries\\com\\paulscode\\soundsystem\\20120107\\soundsystem-20120107.jar;{0}\\libraries\\argo\\argo\\2.25_fixed\\argo-2.25_fixed.jar;{0}\\libraries\\org\\bouncycastle\\bcprov-jdk15on\\1.47\\bcprov-jdk15on-1.47.jar;{0}\\libraries\\com\\google\\guava\\guava\\14.0\\guava-14.0.jar;{0}\\libraries\\org\\apache\\commons\\commons-lang3\\3.1\\commons-lang3-3.1.jar;";               //Sound Syst and argo and guava and apche
+                          //  string launch4 = "{0}\\libraries\\commons-io\\commons-io\\2.4\\commons-io-2.4.jar;{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;{0}\\libraries\\com\\google\\code\\gson\\gson\\2.2.2\\gson-2.2.2.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
+                           // string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;{0}\\libraries\\org\\ow2\\asm\\asm-all\\4.1\\asm-all-4.1.jar;{0}\\libraries\\org\\scala-lang\\scala-library\\2.10.2\\scala-library-2.10.2.jar;{0}\\libraries\\org\\scala-lang\\scala-compiler\\2.10.2\\scala-compiler-2.10.2.jar;{0}\\libraries\\com\\mumfrey\\liteloader\\1.6.4\\liteloader-1.6.4.jar;{0}\\libraries\\net\\minecraft\\launchwrapper\\1.8\\launchwrapper-1.8.jar;{0}\\libraries\\lzma\\lzma\\0.0.1\\lzma-0.0.1.jar"; // Forge and Liteloader
+                           // string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version 1.6.4" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass com.mumfrey.liteloader.launch.LiteLoaderTweaker --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
+                           // string launch = memorys + launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
+                            string launch = utils.Launch(username, "1.6.4", mdir, "1", mversion);
+                     //       launch = string.Format(launch, mdir, mversion);
+                            launch = memorys + launch;
                             if (console == true)
                             {
                                 ProcessStartInfo mcStartInfo = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
@@ -348,16 +348,21 @@ namespace hungry_launcher_v0._0._1
         }
 
 
-        public static string Launch(string username, string version, string mdir, string vers, string client)
+        public static string Launch(string username, string version, string mdir, string client, string wdir)
         {
             char a = '"';
-            string launch, natives, jopt, argo, bouncy, guava, apache, comonio, gson, asm, scala, wrap, lzma, forge;
+            string launch, natives, jopt, argo, bouncy, guava, apache, comonio, gson, asm, scala, wrap, lzma, forge, java, lwjgl;
             string paulscode = null;
             string jorbis = null;
             string wav = null;
             string sound = null;
             string opal = null;
             string ssyst = null;
+            string jinputj = null;
+            string jinputp = null;
+            string jutils = null;
+            string lwjgll = null;
+            string lwjglu = null;
             string scalac = null;
             string scalal = null;
 
@@ -608,14 +613,14 @@ namespace hungry_launcher_v0._0._1
                     {
                         for (int k = 0; k <= 9; k++)
                         {
-                            if (vers.Contains("1.6."))
+                            if (version.Contains("1.6."))
                             {
                                 if (file.Name.Contains("minecraftforge-9.11." + i.ToString() + "." + j.ToString() + k.ToString()) && file.DirectoryName.Contains(forge + "9.11." + i.ToString() + "." + j.ToString() + k.ToString()))
                                 {
                                     forge = file.DirectoryName + "\\" + file.Name;
                                 }
                             }
-                            else if (vers.Contains("1.7."))
+                            else if (version.Contains("1.7."))
                             {
                                 if (file.Name.Contains("minecraftforge-10.12." + i.ToString() + "." + j.ToString() + k.ToString()) && file.DirectoryName.Contains(forge + "10.12." + i.ToString() + "." + j.ToString() + k.ToString()))
                                 {
@@ -657,17 +662,72 @@ namespace hungry_launcher_v0._0._1
                 }
             }
 
-            string launch1 = " -Djava.library.path=" + natives + " -cp ";
-            string launch2 = jopt + ";" + jorbis + ";" + wav + ";" + sound + ";";   //Begin and Mem and Sound  syst
-            string launch3 = opal + ";"+ssyst+";" + argo + ";" + bouncy + ";" + guava + ";" + apache + ";";               //Sound Syst and argo and guava and apche
+            java = "{0}\\libraries\\net\\java\\";
+            java = String.Format(java, mdir);
+            DirectoryInfo javapath = new DirectoryInfo(java);                    //jinput, jinput-patform, jutil detection                                                                                     
+            FileInfo[] javas = javapath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in javas)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        for (int k = 0; k <= 9; k++)
+                        {
+                            if (file.Name.Contains("jinput-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(java + "jinput\\jinput\\" + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                jinputj = file.DirectoryName + "\\" + file.Name;
+                            }
+                            else if (file.Name.Contains("jinput-platform-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(java + "jinput\\jinput-platform\\" + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                jinputp = file.DirectoryName + "\\" + file.Name;
+                            }
+                            else if (file.Name.Contains("jutils-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(java + "jutils\\jutils\\" + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                jutils = file.DirectoryName + "\\" + file.Name;
+                            }
+                        }
+                    }
+                }
+            }
 
-            string launch4 =  comonio+";{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;"+gson+";{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
-            string launch5 =  forge+";"+asm+";"+scalal+";"+scalac+";"+wrap+";"+lzma; // Forge, ASM,SCALA,WRAPPER
-            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version {3}" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
+            lwjgl = "{0}\\libraries\\org\\lwjgl\\lwjgl\\";
+            lwjgl = String.Format(lwjgl, mdir);
+            DirectoryInfo lwjglpath = new DirectoryInfo(lwjgl);                    //lwjgl detection                                                                                     
+            FileInfo[] lwjgls = lwjglpath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in lwjgls)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        for (int k = 0; k <= 9; k++)
+                        {
+                            if (file.Name.Contains("lwjgl-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(lwjgl + "lwjgl\\" + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                lwjgll = file.DirectoryName + "\\" + file.Name;
+                            }
+                            if (file.Name.Contains("lwjgl_util-" + i.ToString() + "." + j.ToString() + "." + k.ToString()) && file.DirectoryName.Equals(lwjgl + "lwjgl_util\\" + i.ToString() + "." + j.ToString() + "." + k.ToString()))
+                            {
+                                lwjglu = file.DirectoryName + "\\" + file.Name;
+                            }
+                        }
+                    }
+                }
+            }
 
+            string launch1 = " -Djava.library.path=" + natives + " -cp ";                         //Begin, Natives
+            string launch2 = ssyst + ";" + opal + ";" + jorbis + ";" + wav + ";" + sound + ";";   //Paulscode Sound system
+            string launch3 = jopt + ";" + argo + ";" + bouncy + ";" + guava + ";" + apache + ";"; //Jopt, Argo, Bounce, Guava, Apache
+
+            string launch4 = comonio + ";" + gson + ";" + jinputj + ";" + jinputp + ";" + jutils + ";" + lwjgll + ";" + lwjglu + ";{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
+            string launch5 = forge + ";" + asm + ";" + scalal + ";" + scalac + ";" + wrap + ";" + lzma; // Forge, ASM,SCALA,WRAPPER
+            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version " + a +version + a + " --gameDir {0} --assetsDir {0}\\assets --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
 
             launch = launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
-            return null;
+
+            launch = String.Format(launch, mdir, wdir);
+            return launch;
         }
 
     }
