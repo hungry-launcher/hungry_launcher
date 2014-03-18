@@ -72,7 +72,7 @@ namespace hungry_launcher_v0._0._1
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
 
-            utils.Launch("1","1",mdir,"1","1");
+            utils.Launch("1","1",mdir,"1.6.4","1");
            
         }
 
@@ -351,7 +351,13 @@ namespace hungry_launcher_v0._0._1
         public static string Launch(string username, string version, string mdir, string vers, string client)
         {
             char a = '"';
-            string launch, natives, jopt, argo, bouncy, guava, apache, comonio, gson, asm, scala, wrap, lzma;
+            string launch, natives, jopt, argo, bouncy, guava, apache, comonio, gson, asm, scala, wrap, lzma, forge;
+            string paulscode = null;
+            string jorbis = null;
+            string wav = null;
+            string sound = null;
+            string opal = null;
+            string ssyst = null;
             string scalac = null;
             string scalal = null;
 
@@ -543,7 +549,7 @@ namespace hungry_launcher_v0._0._1
                         {
                             scalal = file.DirectoryName + "\\" + file.Name;
                         }
-                        if (file.Name.Contains("scala-compiler-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Contains(scala + "scala-compiler\\" + i.ToString() + "." + j.ToString()))
+                       if (file.Name.Contains("scala-compiler-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Contains(scala + "scala-compiler\\" + i.ToString() + "." + j.ToString()))
                         {
                             scalac = file.DirectoryName + "\\" + file.Name;
                         }
@@ -569,10 +575,10 @@ namespace hungry_launcher_v0._0._1
                 }
             }
 
-            lzma = "{0}\\libraries\\lzma\\lzma\\  0.0.1\\lzma-0.0.1.jar";
+            lzma = "{0}\\libraries\\lzma\\lzma\\";
             lzma = String.Format(lzma, mdir);
             DirectoryInfo lzmapath = new DirectoryInfo(lzma);                    //lzma detection                                                                                     
-            FileInfo[] lzmas = wrapath.GetFiles("*.jar", SearchOption.AllDirectories);
+            FileInfo[] lzmas = lzmapath.GetFiles("*.jar", SearchOption.AllDirectories);
             foreach (FileInfo file in lzmas)
             {
                 for (int i = 0; i <= 9; i++)
@@ -590,15 +596,73 @@ namespace hungry_launcher_v0._0._1
                 }
             }
 
+            forge = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\";
+            forge = String.Format(forge, mdir);
+            DirectoryInfo forgepath = new DirectoryInfo(forge);                    //Forge detection                                                                                     
+            FileInfo[] forges = forgepath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in forges)
+            {
+                for (int i = 0; i <= 9; i++)
+                {
+                    for (int j = 0; j <= 9; j++)
+                    {
+                        for (int k = 0; k <= 9; k++)
+                        {
+                            if (vers.Contains("1.6."))
+                            {
+                                if (file.Name.Contains("minecraftforge-9.11." + i.ToString() + "." + j.ToString() + k.ToString()) && file.DirectoryName.Contains(forge + "9.11." + i.ToString() + "." + j.ToString() + k.ToString()))
+                                {
+                                    forge = file.DirectoryName + "\\" + file.Name;
+                                }
+                            }
+                            else if (vers.Contains("1.7."))
+                            {
+                                if (file.Name.Contains("minecraftforge-10.12." + i.ToString() + "." + j.ToString() + k.ToString()) && file.DirectoryName.Contains(forge + "10.12." + i.ToString() + "." + j.ToString() + k.ToString()))
+                                {
+                                    forge = file.DirectoryName + "\\" + file.Name;
+                                }
+                            
+                            }
+                        }
+                    }
+                }
+            }
 
-            MessageBox.Show(lzma);
 
-            string launch1 = " -Djava.library.path="+natives+" -cp ";
-            string launch2 = jopt+";{0}\\libraries\\com\\paulscode\\codecjorbis\\20101023\\codecjorbis-20101023.jar;{0}\\libraries\\com\\paulscode\\codecwav\\20101023\\codecwav-20101023.jar;{0}\\libraries\\com\\paulscode\\libraryjavasound\\20101123\\libraryjavasound-20101123.jar;";   //Begin and Mem and Sound  syst
-            string launch3 = "{0}\\libraries\\com\\paulscode\\librarylwjglopenal\\20100824\\librarylwjglopenal-20100824.jar;{0}\\libraries\\com\\paulscode\\soundsystem\\20120107\\soundsystem-20120107.jar;" + argo + ";" + bouncy + ";" + guava + ";" + apache + ";";               //Sound Syst and argo and guava and apche
+            paulscode = "{0}\\libraries\\com\\paulscode\\";
+            paulscode = String.Format(paulscode, mdir);
+            DirectoryInfo paulspath = new DirectoryInfo(paulscode);                    //Paulscode detection                                                                                     
+            FileInfo[] paulss = paulspath.GetFiles("*.jar", SearchOption.AllDirectories);
+            foreach (FileInfo file in paulss)
+            {
+                if (file.Name.Contains("codecjorbis-") && file.DirectoryName.Contains(paulscode + "codecjorbis\\"))
+                {
+                    jorbis = file.DirectoryName + "\\" + file.Name;
+                }
+                if (file.Name.Contains("codecwav-") && file.DirectoryName.Contains(paulscode + "codecwav\\"))
+                {
+                    wav = file.DirectoryName + "\\" + file.Name;
+                }
+                if (file.Name.Contains("libraryjavasound-") && file.DirectoryName.Contains(paulscode + "libraryjavasound\\"))
+                {
+                    sound = file.DirectoryName + "\\" + file.Name;
+                }
+                if (file.Name.Contains("librarylwjglopenal-") && file.DirectoryName.Contains(paulscode + "librarylwjglopenal\\"))
+                {
+                   opal = file.DirectoryName + "\\" + file.Name;
+                }
+                if (file.Name.Contains("soundsystem-") && file.DirectoryName.Contains(paulscode + "soundsystem\\"))
+                {
+                    ssyst = file.DirectoryName + "\\" + file.Name;
+                }
+            }
+
+            string launch1 = " -Djava.library.path=" + natives + " -cp ";
+            string launch2 = jopt + ";" + jorbis + ";" + wav + ";" + sound + ";";   //Begin and Mem and Sound  syst
+            string launch3 = opal + ";"+ssyst+";" + argo + ";" + bouncy + ";" + guava + ";" + apache + ";";               //Sound Syst and argo and guava and apche
 
             string launch4 =  comonio+";{0}\\libraries\\net\\java\\jinput\\jinput\\2.0.5\\jinput-2.0.5.jar;{0}\\libraries\\net\\java\\jutils\\jutils\\1.0.0\\jutils-1.0.0.jar;"+gson+";{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl\\2.9.0\\lwjgl-2.9.0.jar;{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl_util\\2.9.0\\lwjgl_util-2.9.0.jar;{0}\\libraries\\net\\java\\jinput\\jinput-platform\\2.0.5\\jinput-platform-2.0.5-natives-windows.jar;{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
-            string launch5 = "{0}\\libraries\\net\\minecraftforge\\minecraftforge\\9.11.1.965\\minecraftforge-9.11.1.965.jar;"+asm+";"+scalal+";"+scalac+";"+wrap+";"+lzma; // Forge and Liteloader
+            string launch5 =  forge+";"+asm+";"+scalal+";"+scalac+";"+wrap+";"+lzma; // Forge, ASM,SCALA,WRAPPER
             string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version {3}" + " --gameDir {0} --assetsDir {0}\\assets --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
 
 
