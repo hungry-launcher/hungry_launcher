@@ -14,6 +14,7 @@ using System.IO;
 using System.IO.Compression;
 using Microsoft.Win32;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace hungry_launcher
 {
@@ -71,6 +72,8 @@ namespace hungry_launcher
                 }
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
+
+            utils.mojang(mdir);
 
         }
 
@@ -730,6 +733,14 @@ namespace hungry_launcher
 
             launch = String.Format(launch, mdir, wdir);
             return launch;
+        }
+
+        public static void mojang(string mdir)
+        {
+            string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
+            WebClient jsondown = new WebClient();
+            jsondown.DownloadFile(jsonurl, mdir + "\\versions\\" + Path.GetFileName(jsonurl));
+
         }
 
     }
