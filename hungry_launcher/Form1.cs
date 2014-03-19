@@ -15,7 +15,7 @@ using System.IO.Compression;
 using Microsoft.Win32;
 using System.Threading;
 
-namespace hungry_launcher_v0._0._1
+namespace hungry_launcher
 {
     public partial class Form1 : Form
     {
@@ -23,19 +23,19 @@ namespace hungry_launcher_v0._0._1
         string mversion;
         string alocmem;
         string[] mver;
-        bool console,autoclose;
+        bool console, autoclose;
 
         public Form1()
         {
             InitializeComponent();
         }
         private void button2_Click(object sender, EventArgs e)
-        {       
+        {
         }
         private void Form1_Load(object sender, EventArgs e)
         {
             string path;
-            mdir = Properties.Settings.Default.mdir;          
+            mdir = Properties.Settings.Default.mdir;
 
             if (mdir == null)
             {
@@ -65,13 +65,13 @@ namespace hungry_launcher_v0._0._1
             mver = utils.mineversions(mdir);
             if (mver != null)
             {
-               foreach (Object i in mver)
+                foreach (Object i in mver)
                 {
-                    comboBox1.Items.Add(i);  
-                }                        
+                    comboBox1.Items.Add(i);
+                }
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
-           
+
         }
 
 
@@ -189,9 +189,9 @@ namespace hungry_launcher_v0._0._1
                 {
                     path = mdir;
                 }
-             Properties.Settings.Default.mdir = mdir;
-             Properties.Settings.Default.Save();
-             comboBox1.Text = null;
+            Properties.Settings.Default.mdir = mdir;
+            Properties.Settings.Default.Save();
+            comboBox1.Text = null;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -296,14 +296,14 @@ namespace hungry_launcher_v0._0._1
                 {
                     String currentVersion = basejdk.GetValue("CurrentVersion").ToString();
                     using (var homeKey = basejdk.OpenSubKey(currentVersion))
-                    javapath = homeKey.GetValue("JavaHome").ToString();
+                        javapath = homeKey.GetValue("JavaHome").ToString();
                 }
             }
             else if (basejre != null)
             {
                 String currentVersion = basejre.GetValue("CurrentVersion").ToString();
                 using (var homeKey = basejre.OpenSubKey(currentVersion))
-                javapath = homeKey.GetValue("JavaHome").ToString();
+                    javapath = homeKey.GetValue("JavaHome").ToString();
             }
             return javapath;
         }
@@ -331,9 +331,11 @@ namespace hungry_launcher_v0._0._1
             }
             else return null;
         }
-        public static string Truncates(string trunc) {
+        public static string Truncates(string trunc)
+        {
             string trunced = "";
-            for (int i = 0; i <= trunc.Length; i++) {
+            for (int i = 0; i <= trunc.Length; i++)
+            {
                 char x = trunc[i];
                 char j = trunc[i + 1];
                 char a = trunc[i + 2];
@@ -367,7 +369,7 @@ namespace hungry_launcher_v0._0._1
             string scalal = null;
 
             natives = "{0}\\libraries\\org\\lwjgl\\lwjgl\\lwjgl-platform\\";
-            natives = String.Format(natives, mdir);                
+            natives = String.Format(natives, mdir);
             DirectoryInfo natpath = new DirectoryInfo(natives);                      //Natives detection
             FileInfo[] nats = natpath.GetFiles("*.jar", SearchOption.AllDirectories);
             foreach (FileInfo file in nats)
@@ -398,9 +400,9 @@ namespace hungry_launcher_v0._0._1
                     for (int j = 0; j <= 9; j++)
                     {
                         if (file.Name.Contains("jopt-simple-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(jopt + i.ToString() + "." + j.ToString()))
-                            {
-                                jopt = file.DirectoryName +"\\"+ file.Name;
-                            }
+                        {
+                            jopt = file.DirectoryName + "\\" + file.Name;
+                        }
                     }
                 }
             }
@@ -475,7 +477,7 @@ namespace hungry_launcher_v0._0._1
                 {
                     for (int j = 0; j <= 9; j++)
                     {
-                        if (file.Name.Contains("commons-lang3-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(apache + i.ToString() +"."+ j.ToString()))
+                        if (file.Name.Contains("commons-lang3-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(apache + i.ToString() + "." + j.ToString()))
                         {
                             apache = file.DirectoryName + "\\" + file.Name;
                         }
@@ -533,9 +535,9 @@ namespace hungry_launcher_v0._0._1
                     for (int j = 0; j <= 9; j++)
                     {
                         if (file.Name.Contains("asm-all-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Equals(asm + i.ToString() + "." + j.ToString()))
-                            {
-                                asm = file.DirectoryName + "\\" + file.Name;
-                            }
+                        {
+                            asm = file.DirectoryName + "\\" + file.Name;
+                        }
                     }
                 }
             }
@@ -554,7 +556,7 @@ namespace hungry_launcher_v0._0._1
                         {
                             scalal = file.DirectoryName + "\\" + file.Name;
                         }
-                       if (file.Name.Contains("scala-compiler-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Contains(scala + "scala-compiler\\" + i.ToString() + "." + j.ToString()))
+                        if (file.Name.Contains("scala-compiler-" + i.ToString() + "." + j.ToString()) && file.DirectoryName.Contains(scala + "scala-compiler\\" + i.ToString() + "." + j.ToString()))
                         {
                             scalac = file.DirectoryName + "\\" + file.Name;
                         }
@@ -626,7 +628,7 @@ namespace hungry_launcher_v0._0._1
                                 {
                                     forge = file.DirectoryName + "\\" + file.Name;
                                 }
-                            
+
                             }
                         }
                     }
@@ -654,7 +656,7 @@ namespace hungry_launcher_v0._0._1
                 }
                 if (file.Name.Contains("librarylwjglopenal-") && file.DirectoryName.Contains(paulscode + "librarylwjglopenal\\"))
                 {
-                   opal = file.DirectoryName + "\\" + file.Name;
+                    opal = file.DirectoryName + "\\" + file.Name;
                 }
                 if (file.Name.Contains("soundsystem-") && file.DirectoryName.Contains(paulscode + "soundsystem\\"))
                 {
@@ -722,7 +724,7 @@ namespace hungry_launcher_v0._0._1
 
             string launch4 = comonio + ";" + gson + ";" + jinputj + ";" + jinputp + ";" + jutils + ";" + lwjgll + ";" + lwjglu + ";{0}\\versions\\{1}\\{1}.jar;";    //LWJGl and GSON and Version
             string launch5 = forge + ";" + asm + ";" + scalal + ";" + scalac + ";" + wrap + ";" + lzma; // Forge, ASM,SCALA,WRAPPER
-            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version " + a +version + a + " --gameDir {0} --assetsDir {0}\\assets --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
+            string launch6 = " net.minecraft.launchwrapper.Launch --username " + a + username + a + " --version " + a + version + a + " --gameDir {0} --assetsDir {0}\\assets --tweakClass cpw.mods.fml.common.launcher.FMLTweaker"; //Main and Other         
 
             launch = launch1 + launch2 + launch3 + launch4 + launch5 + launch6;
 

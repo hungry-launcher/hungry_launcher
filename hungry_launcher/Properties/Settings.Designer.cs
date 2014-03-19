@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace hungry_launcher_v0._0._1.Properties {
+namespace hungry_launcher.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -32,6 +32,30 @@ namespace hungry_launcher_v0._0._1.Properties {
             }
             set {
                 this["chBox"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox2 {
+            get {
+                return ((bool)(this["chBox2"]));
+            }
+            set {
+                this["chBox2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox3 {
+            get {
+                return ((bool)(this["chBox3"]));
+            }
+            set {
+                this["chBox3"] = value;
             }
         }
         
@@ -61,13 +85,13 @@ namespace hungry_launcher_v0._0._1.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chBox2 {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Textbox3 {
             get {
-                return ((bool)(this["chBox2"]));
+                return ((string)(this["Textbox3"]));
             }
             set {
-                this["chBox2"] = value;
+                this["Textbox3"] = value;
             }
         }
         
@@ -85,18 +109,6 @@ namespace hungry_launcher_v0._0._1.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chBox3 {
-            get {
-                return ((bool)(this["chBox3"]));
-            }
-            set {
-                this["chBox3"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string combobox {
             get {
@@ -104,18 +116,6 @@ namespace hungry_launcher_v0._0._1.Properties {
             }
             set {
                 this["combobox"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Textbox3 {
-            get {
-                return ((string)(this["Textbox3"]));
-            }
-            set {
-                this["Textbox3"] = value;
             }
         }
     }

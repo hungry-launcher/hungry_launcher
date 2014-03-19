@@ -1,4 +1,4 @@
-﻿namespace hungry_launcher_v0._0._1
+﻿namespace hungry_launcher
 {
     partial class Form1
     {

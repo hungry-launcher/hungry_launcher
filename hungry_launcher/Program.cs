@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace hungry_launcher_v0._0._1
+namespace hungry_launcher
 {
     static class Program
     {
