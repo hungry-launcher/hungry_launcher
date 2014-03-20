@@ -73,7 +73,7 @@ namespace hungry_launcher
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
 
-            utils.mojang(mdir);
+            utils.getversions(mdir);
 
         }
 
@@ -734,13 +734,52 @@ namespace hungry_launcher
             launch = String.Format(launch, mdir, wdir);
             return launch;
         }
-
-        public static void mojang(string mdir)
+        public static void getversions(string mdir)
         {
+            string latestrel = null;
+            string latestsnap = null;
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
             WebClient jsondown = new WebClient();
             jsondown.DownloadFile(jsonurl, mdir + "\\versions\\" + Path.GetFileName(jsonurl));
+            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions\\"+"versions.json"));                   
+            
 
+
+            List<hungry_launcher.utils.Version> allver = versions.versions;
+            List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
+
+            latestrel = versions.latest.release;
+            latestsnap = versions.latest.snapshot;
+
+            foreach (var item in allver)
+            {
+                if (item.type=="release")
+                {
+                release.Add(item);
+                }
+            }
+
+                Console.WriteLine(versions.latest.release);
+        }
+      
+        public class Latest
+        {
+            public string snapshot { get; set; }
+            public string release { get; set; }
+        }
+
+        public class Version
+        {
+            public string id { get; set; }
+            public string time { get; set; }
+            public string releaseTime { get; set; }
+            public string type { get; set; }
+        }
+
+        public class McVersion
+        {
+            public Latest latest { get; set; }
+            public List<Version> versions { get; set; }
         }
 
     }
