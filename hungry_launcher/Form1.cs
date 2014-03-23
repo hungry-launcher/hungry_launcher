@@ -900,20 +900,27 @@ namespace hungry_launcher
                 }
                 else if (item.url != null)
                 {
-                    string getlib = item.url + url;
-                    WebClient libdown = new WebClient();
-                    System.IO.Directory.CreateDirectory(mdir + libr);
-                    libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
-                    if (item.name.Contains("forge"))
+                    if (!File.Exists(mdir + libr + "\\" + fname))
                     {
-                        File.Move(mdir + libr + "\\" + Path.GetFileName(getlib), mdir + libr + "\\" + forge);
+                        string getlib = "";
+                        if (item.name.Contains("scala"))
+                        {
+                            getlib = "http://repo1.maven.org/maven2/" + url;
+                        }
+                        else
+                        {
+                            getlib = item.url + url;
+                        }
+                        WebClient libdown = new WebClient();
+                        System.IO.Directory.CreateDirectory(mdir + libr);
+                        libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
+                        if (item.name.Contains("forge"))
+                        {
+                            File.Move(mdir + libr + "\\" + Path.GetFileName(getlib), mdir + libr + "\\" + forge);
+                        }
                     }
                 }
-                Thread.Sleep(1);
-
             }
         }
-
-
     }
 }
