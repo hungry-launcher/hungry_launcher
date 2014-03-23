@@ -740,7 +740,7 @@ namespace hungry_launcher
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
             WebClient jsondown = new WebClient();
             jsondown.DownloadFile(jsonurl, mdir + "\\versions\\" + Path.GetFileName(jsonurl));
-            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions\\versions.json"));                               
+            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions\\versions.json"));
 
             List<hungry_launcher.utils.Version> allver = versions.versions;
             List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
@@ -779,9 +779,7 @@ namespace hungry_launcher
             public List<Version> versions { get; set; }
         }
 
-
-
-        public static void getver(string ver,string mdir)
+        public static void getver(string ver, string mdir)
         {
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
@@ -793,9 +791,9 @@ namespace hungry_launcher
             verdown.DownloadFile(verget, ver + ".jar");
         }
 
-        public static hungry_launcher.utils.Libraries libraries(string vers,string mdir)
+        public static hungry_launcher.utils.Libraries libraries(string vers, string mdir)
         {
-            Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\"+vers+"\\"+vers+".json"));
+            Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
             return libs;
         }
 
@@ -803,24 +801,12 @@ namespace hungry_launcher
         public class Natives
         {
             public string windows { get; set; }
-            public string osx { get; set; }
-        }
-
-        public class Os
-        {
-            public string name { get; set; }
-        }
-        public class Rule
-        {
-            public string action { get; set; }
-            public Os os { get; set; }
         }
 
         public class Library
         {
             public string name { get; set; }
             public string url { get; set; }
-            public List<Rule> rules { get; set; }
             public Natives natives { get; set; }
         }
 
@@ -842,6 +828,7 @@ namespace hungry_launcher
                 string libr = "";
                 string url = "";
                 string fname = "";
+                string forge = "";
                 int j = 0;
 
                 for (int i = 0; i < item.name.Length; i++)
@@ -877,18 +864,21 @@ namespace hungry_launcher
                     }
                 }
 
-
                 if ((item.natives != null) && (item.natives.windows != null))
                 {
                     fname = fname + "-natives-windows";
+                }
+                if (item.name.Contains("forge"))
+                {
+                    forge = fname + ".jar";
+                    fname = fname + "-universal";
                 }
                 fname = fname + ".jar";
 
                 url = libr + '/' + fname;
                 url = url.Replace("\\", "/");
 
-              //  MessageBox.Show("1");
-                if (item.natives == null)
+                if ((item.natives == null) && (item.url == null))
                 {
                     if (!File.Exists(mdir + libr + "\\" + fname))
                     {
@@ -898,7 +888,7 @@ namespace hungry_launcher
                         libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
                     }
                 }
-                else if ((item.natives != null) && (item.natives.windows != null))
+                else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
                 {
                     if (!File.Exists(mdir + libr + "\\" + fname))
                     {
@@ -906,9 +896,21 @@ namespace hungry_launcher
                         WebClient libdown = new WebClient();
                         System.IO.Directory.CreateDirectory(mdir + libr);
                         libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
-                    }                               
+                    }
                 }
-             //   MessageBox.Show("1");
+                else if (item.url != null)
+                {
+                    string getlib = item.url + url;
+                    WebClient libdown = new WebClient();
+                    System.IO.Directory.CreateDirectory(mdir + libr);
+                    libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
+                    if (item.name.Contains("forge"))
+                    {
+                        File.Move(mdir + libr + "\\" + Path.GetFileName(getlib), mdir + libr + "\\" + forge);
+                    }
+                }
+                Thread.Sleep(1);
+
             }
         }
 
