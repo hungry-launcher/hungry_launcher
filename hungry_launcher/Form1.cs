@@ -16,6 +16,7 @@ using Microsoft.Win32;
 using System.Threading;
 using Newtonsoft.Json;
 
+
 namespace hungry_launcher
 {
     public partial class Form1 : Form
@@ -73,7 +74,7 @@ namespace hungry_launcher
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
 
-            utils.getversions(mdir);
+            utils.donwlibs("1.7.2", mdir);
 
         }
 
@@ -734,38 +735,35 @@ namespace hungry_launcher
             launch = String.Format(launch, mdir, wdir);
             return launch;
         }
-        public static void getversions(string mdir)
+        public static hungry_launcher.utils.Version[] getversions(string mdir, bool ret)
         {
-            string latestrel = null;
-            string latestsnap = null;
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
             WebClient jsondown = new WebClient();
             jsondown.DownloadFile(jsonurl, mdir + "\\versions\\" + Path.GetFileName(jsonurl));
-            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions\\"+"versions.json"));                   
-            
-
+            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions\\versions.json"));                               
 
             List<hungry_launcher.utils.Version> allver = versions.versions;
             List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
 
-            latestrel = versions.latest.release;
-            latestsnap = versions.latest.snapshot;
-
             foreach (var item in allver)
             {
-                if (item.type=="release")
+                if (item.type == "release")
                 {
-                release.Add(item);
+                    release.Add(item);
                 }
             }
 
-                Console.WriteLine(versions.latest.release);
-        }
-      
-        public class Latest
-        {
-            public string snapshot { get; set; }
-            public string release { get; set; }
+
+            if (ret == false)
+            {
+                return allver.ToArray();
+            }
+            else if (ret == true)
+            {
+                return release.ToArray();
+            }
+            else return null;
+
         }
 
         public class Version
@@ -778,9 +776,142 @@ namespace hungry_launcher
 
         public class McVersion
         {
-            public Latest latest { get; set; }
             public List<Version> versions { get; set; }
         }
+
+
+
+        public static void getver(string ver,string mdir)
+        {
+            string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
+            string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
+            WebClient jsondown = new WebClient();
+            WebClient verdown = new WebClient();
+            System.IO.Directory.CreateDirectory(mdir + "\\versions\\" + ver);
+            Directory.SetCurrentDirectory(mdir + "\\versions\\" + ver);
+            jsondown.DownloadFile(verjson, ver + ".json");
+            verdown.DownloadFile(verget, ver + ".jar");
+        }
+
+        public static hungry_launcher.utils.Libraries libraries(string vers,string mdir)
+        {
+            Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\"+vers+"\\"+vers+".json"));
+            return libs;
+        }
+
+
+        public class Natives
+        {
+            public string windows { get; set; }
+            public string osx { get; set; }
+        }
+
+        public class Os
+        {
+            public string name { get; set; }
+        }
+        public class Rule
+        {
+            public string action { get; set; }
+            public Os os { get; set; }
+        }
+
+        public class Library
+        {
+            public string name { get; set; }
+            public string url { get; set; }
+            public List<Rule> rules { get; set; }
+            public Natives natives { get; set; }
+        }
+
+        public class Libraries
+        {
+            public string id { get; set; }
+            public string type { get; set; }
+            public List<Library> libraries { get; set; }
+        }
+
+        public static void donwlibs(string vers, string mdir)
+        {
+            var libs = utils.libraries(vers, mdir);
+
+            mdir = mdir + "\\libraries\\";
+
+            foreach (var item in libs.libraries)
+            {
+                string libr = "";
+                string url = "";
+                string fname = "";
+                int j = 0;
+
+                for (int i = 0; i < item.name.Length; i++)
+                {
+                    if (item.name[i] == ':')
+                    {
+                        libr = libr + "\\";
+                        i++;
+                        j = i;
+                        break;
+                    }
+                    if (item.name[i] == '.')
+                    {
+                        libr = libr + "\\";
+                    }
+                    else
+                    {
+                        libr = libr + item.name[i];
+                    }
+                }
+
+                for (int k = j; k < item.name.Length; k++)
+                {
+                    if (item.name[k] == ':')
+                    {
+                        fname = fname + "-";
+                        libr = libr + "\\";
+                    }
+                    else
+                    {
+                        fname = fname + item.name[k];
+                        libr = libr + item.name[k];
+                    }
+                }
+
+
+                if ((item.natives != null) && (item.natives.windows != null))
+                {
+                    fname = fname + "-natives-windows";
+                }
+                fname = fname + ".jar";
+
+                url = libr + '/' + fname;
+                url = url.Replace("\\", "/");
+
+              //  MessageBox.Show("1");
+                if (item.natives == null)
+                {
+                    if (!File.Exists(mdir + libr + "\\" + fname))
+                    {
+                        string getlib = "https://libraries.minecraft.net/" + url;
+                        WebClient libdown = new WebClient();
+                        System.IO.Directory.CreateDirectory(mdir + libr);
+                        libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
+                    }
+                }
+                else if ((item.natives != null) && (item.natives.windows != null))
+                {
+                    if (!File.Exists(mdir + libr + "\\" + fname))
+                    {
+                        string getlib = "https://libraries.minecraft.net/" + url;
+                        WebClient libdown = new WebClient();
+                        System.IO.Directory.CreateDirectory(mdir + libr);
+                        libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
+                    }                               
+                }
+             //   MessageBox.Show("1");
+            }
+        }
+
 
     }
 }
