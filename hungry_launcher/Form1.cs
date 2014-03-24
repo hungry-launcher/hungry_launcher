@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -82,7 +82,6 @@ namespace hungry_launcher
         {
             string javahome;
             long memory = 0;
-            string mojvers = "";
             javahome = utils.getjavapath();
             if (javahome == null)
             {
@@ -122,19 +121,19 @@ namespace hungry_launcher
 
 
 
-                            launch = launch.Replace("${auth_player_name}", a+username+a);
-                            launch = launch.Replace("${version_name}", a+mversion);
-                            launch = launch.Replace("${game_directory}", mdir);
-                            launch = launch.Replace("${game_assets}", mdir + "\\assets");
+                            launch = launch.Replace("${auth_player_name}", a + username + a);
+                            launch = launch.Replace("${version_name}", a + mversion + a);
+                            launch = launch.Replace("${game_directory}", a + mdir + a);
+                            launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
                             launch = launch.Replace(" --uuid ${auth_uuid}", "");
                             launch = launch.Replace(" --accessToken ${auth_access_token}", "");
                             if (launch.Contains("${user_properties}"))
                             {
                                 launch = launch.Replace(" --userProperties ${user_properties}", "");
                             }
-                             if (launch.Contains("${user_type}"))
-                            { 
-                             launch = launch.Replace(" --userType ${user_type}", "");
+                            if (launch.Contains("${user_type}"))
+                            {
+                                launch = launch.Replace(" --userType ${user_type}", "");
                             }
                             launch = memorys + launch;
                             if (console == true)
@@ -425,6 +424,16 @@ namespace hungry_launcher
         {
             public string windows { get; set; }
         }
+        public class Os
+        {
+            public string name { get; set; }
+        }
+
+        public class Rule
+        {
+            public string action { get; set; }
+            public Os os { get; set; }
+        }
         public class Extract
         {
             public List<string> exclude { get; set; }
@@ -434,6 +443,7 @@ namespace hungry_launcher
             public string name { get; set; }
             public string url { get; set; }
             public Extract extract { get; set; }
+            public List<Rule> rules { get; set; }
             public Natives natives { get; set; }
         }
 
@@ -453,8 +463,38 @@ namespace hungry_launcher
 
             mdir = mdir + "\\libraries\\";
 
+            if (Directory.Exists(mdir + "natives"))
+            {
+                Directory.Delete(mdir + "natives", true);
+            }
+            else
+            {
+                Directory.CreateDirectory(mdir + "natives");
+            }
+
             foreach (var item in libs.libraries)
             {
+                bool osx = false;
+                if (item.rules != null)
+                {
+                    foreach (var rul in item.rules)
+                    {
+                        if ((rul.action != null) && (rul.action == "allow"))
+                        {
+                            if ((rul.os != null) && (rul.os.name == "osx"))
+                            {
+                                osx = true;
+                            }
+
+                        }
+                    }
+                }
+                if (osx == true)
+                {
+                    continue;
+                }
+
+
                 string libr = "";
                 string url = "";
                 string fname = "";
@@ -513,77 +553,79 @@ namespace hungry_launcher
                 url = libr + '/' + fname;
                 url = url.Replace("\\", "/");
 
-                bool ziga = File.Exists(mdir + libr + "\\" + chname);
+                bool fexist = File.Exists(mdir + libr + "\\" + chname);
 
-                if (ziga == false)
+                if (fexist == false)
                 {
-                    if ((item.natives == null) && (item.url == null))
+                    try
                     {
+                        if ((item.natives == null) && (item.url == null))
+                        {
+                            string getlib = "https://libraries.minecraft.net/" + url;
+                            WebClient libdown = new WebClient();
+                            System.IO.Directory.CreateDirectory(mdir + libr);
+                            libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
-                        string getlib = "https://libraries.minecraft.net/" + url;
-                        WebClient libdown = new WebClient();
-                        System.IO.Directory.CreateDirectory(mdir + libr);
-                        libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
-                        cp = cp + mdir + libr + "\\" + Path.GetFileName(getlib) + ";";
+                        }
+                        else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
+                        {
 
-                    }
-                    else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
-                    {
+                            string getlib = "https://libraries.minecraft.net/" + url;
+                            WebClient libdown = new WebClient();
+                            System.IO.Directory.CreateDirectory(mdir + libr);
+                            libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
-                        string getlib = "https://libraries.minecraft.net/" + url;
-                        WebClient libdown = new WebClient();
-                        System.IO.Directory.CreateDirectory(mdir + libr);
-                        libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
-                        cp = cp + mdir + libr + "\\" + Path.GetFileName(getlib) + ";";
-                    }
-                    else if (item.url != null)
-                    {
-                        string getlib = "";
-                        if (item.name.Contains("scala"))
-                        {
-                            getlib = "http://repo1.maven.org/maven2/" + url;
                         }
-                        else
+                        else if (item.url != null)
                         {
-                            getlib = item.url + url;
-                        }
-                        WebClient libdown = new WebClient();
-                        System.IO.Directory.CreateDirectory(mdir + libr);
-                        libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
-                        if (item.name.Contains("forge"))
-                        {
-                            File.Move(mdir + libr + "\\" + Path.GetFileName(getlib), mdir + libr + "\\" + forge);
-                            cp = cp + mdir + libr + "\\" + forge + ";";
-                        }
-                        else
-                        {
-                            cp = cp + mdir + libr + "\\" + Path.GetFileName(getlib) + ";";
+                            string getlib = "";
+                            if (item.name.Contains("scala"))
+                            {
+                                getlib = "http://repo1.maven.org/maven2/" + url;
+                            }
+                            else
+                            {
+                                getlib = item.url + url;
+                            }
+                            WebClient libdown = new WebClient();
+                            System.IO.Directory.CreateDirectory(mdir + libr);
+                            libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
+                            if (item.name.Contains("forge"))
+                            {
+                                File.Move(mdir + libr + "\\" + Path.GetFileName(getlib), mdir + libr + "\\" + forge);
+                            }
                         }
                     }
+
+                    catch (System.Net.WebException e)
+                    {
+                        MessageBox.Show("Cant download file " + fname);
+                    }
+                }
+                if (item.name.Contains("forge"))
+                {
+                    cp = cp + mdir + libr + "\\" + forge + ";";
                 }
                 else
                 {
-                    if (item.name.Contains("forge"))
-                    {
-                        cp = cp + mdir + libr + "\\" + forge + ";";
-                    }
-                    else
-                    {
-                        cp = cp + mdir + libr + "\\" + fname + ";";
-                    }
+                    cp = cp + mdir + libr + "\\" + fname + ";";
                 }
-                if ((item.name.Contains("org.lwjgl.lwjgl:lwjgl-platform")) && (item.natives.windows != null))
+                if (((item.name.Contains("org.lwjgl.lwjgl:lwjgl-platform")) && (item.natives.windows != null)) || ((item.name.Contains("net.java.jinput:jinput-platform")) && (item.natives.windows != null)))
                 {
+
                     string zipPath = mdir + libr + "\\" + fname;
-                    string extractPath = mdir + libr + "\\" + "natives";
-                    if (Directory.Exists(extractPath))
-                    {
-                        Directory.Delete(extractPath, true);
-                    }
+                    string extractPath = mdir + "natives";
                     ZipFile.ExtractToDirectory(zipPath, extractPath);
-                    Directory.Delete(extractPath + "\\META-INF", true);
-                    cp = " -Djava.library.path=" + extractPath + " -cp " + cp;
+                    if (Directory.Exists(extractPath + "\\META-INF"))
+                    {
+                        Directory.Delete(extractPath + "\\META-INF", true);
+                    }
+                    if (!cp.Contains(" -Djava.library.path="))
+                    {
+                        cp = " -Djava.library.path=" + extractPath + " -cp " + cp;
+                    }
                 }
+
             }
             mdir = mdir.Replace("libraries", "versions");
             cp = cp + mdir + vers + "\\" + vers + ".jar";
