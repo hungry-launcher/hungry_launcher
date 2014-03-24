@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -125,8 +125,8 @@ namespace hungry_launcher
                             launch = launch.Replace("${version_name}", a + mversion + a);
                             launch = launch.Replace("${game_directory}", a + mdir + a);
                             launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
-                            launch = launch.Replace(" --uuid ${auth_uuid}", "");
-                            launch = launch.Replace(" --accessToken ${auth_access_token}", "");
+                            //launch = launch.Replace(" --uuid ${auth_uuid}", "");
+                            //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
                             if (launch.Contains("${user_properties}"))
                             {
                                 launch = launch.Replace(" --userProperties ${user_properties}", "");
