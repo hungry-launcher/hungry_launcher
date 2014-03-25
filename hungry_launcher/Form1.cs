@@ -325,39 +325,19 @@ namespace hungry_launcher
                 FileInfo[] vers = verpath.GetFiles("*.jar", SearchOption.AllDirectories);
                 foreach (FileInfo file in vers)
                 {
-                    for (int i = 0; i <= 9; i++)
+                    string folname = file.Name.Replace(".jar", "");
+                    string jsonname = file.Name.Replace("jar", "json");
+                    if ((file.DirectoryName.Equals(versions + folname)) && (File.Exists(versions + folname + "\\" + jsonname)))
                     {
-                        if (file.Name.Contains("1." + i.ToString()) && (file.DirectoryName.Equals(versions + Truncates(file.Name))))
-                        {
-                            mver.Add(Truncates(file.Name));
-                        }
+                        mver.Add(folname);
                     }
                 }
                 return mver.ToArray();
             }
             else return null;
         }
-        public static string Truncates(string trunc)
-        {
-            string trunced = "";
-            for (int i = 0; i <= trunc.Length; i++)
-            {
-                char x = trunc[i];
-                char j = trunc[i + 1];
-                char a = trunc[i + 2];
-                char r = trunc[i + 3];
-                if ((x == '.') && (j == 'j') && (a == 'a') && (r == 'r'))
-                {
-                    break;
-                }
-                trunced = trunced + x;
-            }
-            return trunced;
-        }
 
-
-
-        public static hungry_launcher.utils.Version[] getversions(string mdir, bool ret)
+        public static hungry_launcher.utils.Version[] getversions(string mdir)
         {
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
             WebClient jsondown = new WebClient();
@@ -374,18 +354,7 @@ namespace hungry_launcher
                     release.Add(item);
                 }
             }
-
-
-            if (ret == false)
-            {
-                return allver.ToArray();
-            }
-            else if (ret == true)
-            {
-                return release.ToArray();
-            }
-            else return null;
-
+            return release.ToArray();
         }
 
         public class Version
@@ -412,13 +381,6 @@ namespace hungry_launcher
             jsondown.DownloadFile(verjson, ver + ".json");
             verdown.DownloadFile(verget, ver + ".jar");
         }
-
-        public static hungry_launcher.utils.Libraries libraries(string vers, string mdir)
-        {
-            Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
-            return libs;
-        }
-
 
         public class Natives
         {
@@ -458,7 +420,8 @@ namespace hungry_launcher
 
         public static string donwlibs(string vers, string mdir)
         {
-            var libs = utils.libraries(vers, mdir);
+            Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
+
             string cp = "";
 
             mdir = mdir + "\\libraries\\";
@@ -538,6 +501,18 @@ namespace hungry_launcher
                 if ((item.natives != null) && (item.natives.windows != null))
                 {
                     fname = fname + "-natives-windows";
+                    if (item.natives.windows.Contains("${arch}"))
+                    {
+                        bool is64bit = System.Environment.Is64BitOperatingSystem;
+                        if (is64bit == true)
+                        {
+                            fname = fname + "-64";
+                        }
+                        else
+                        {
+                            fname = fname + "-32";
+                        }
+                    }
                 }
                 if (item.name.Contains("forge"))
                 {
