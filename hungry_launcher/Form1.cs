@@ -25,6 +25,7 @@ namespace hungry_launcher
         string mversion;
         string alocmem;
         string[] mver;
+        hungry_launcher.utils.Version[] downver;
         bool console, autoclose;
 
         public Form1()
@@ -74,9 +75,15 @@ namespace hungry_launcher
             }
             comboBox1.Text = Properties.Settings.Default.combobox;
 
+            downver = utils.getversions(mdir);
+            if (downver != null)
+            {
+                foreach (var item in downver)
+                {
+                    comboBox3.Items.Add(item.id);
+                }
+            }
         }
-
-
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -118,8 +125,6 @@ namespace hungry_launcher
                             string memorys = " -Xms512M -Xmx{0}";
                             memorys = string.Format(memorys, alocmem);
                             string launch = utils.donwlibs(mversion, mdir);
-
-
 
                             launch = launch.Replace("${auth_player_name}", a + username + a);
                             launch = launch.Replace("${version_name}", a + mversion + a);
@@ -250,7 +255,6 @@ namespace hungry_launcher
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
 
         private void textBox3_TextChanged(object sender, EventArgs e)
@@ -266,8 +270,18 @@ namespace hungry_launcher
                 e.Handled = true;
             }
         }
-
-
+        private void comboBox3_Dropdown(object sender, System.EventArgs e)
+        {
+            downver = utils.getversions(mdir);
+            comboBox3.Items.Clear();
+            if (downver != null)
+            {
+                foreach (var item in downver)
+                {
+                    comboBox3.Items.Add(item.id);
+                }
+            }
+        }
     }
 
 
@@ -340,10 +354,17 @@ namespace hungry_launcher
         public static hungry_launcher.utils.Version[] getversions(string mdir)
         {
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
-            WebClient jsondown = new WebClient();
-            jsondown.DownloadFile(jsonurl, mdir + "\\versions\\" + Path.GetFileName(jsonurl));
-            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions\\versions.json"));
-
+            string vertext = String.Empty;
+            WebRequest req = WebRequest.Create(jsonurl);
+            WebResponse resp = req.GetResponse();
+            using (Stream stream = resp.GetResponseStream())
+            {
+                using (StreamReader sr = new StreamReader(stream))
+                {
+                    vertext = sr.ReadToEnd();
+                }
+            }         
+            McVersion versions = JsonConvert.DeserializeObject<McVersion>(vertext);
             List<hungry_launcher.utils.Version> allver = versions.versions;
             List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
 
@@ -457,7 +478,6 @@ namespace hungry_launcher
                     continue;
                 }
 
-
                 string libr = "";
                 string url = "";
                 string fname = "";
@@ -527,7 +547,6 @@ namespace hungry_launcher
                 fname = fname + ".jar";
                 url = libr + '/' + fname;
                 url = url.Replace("\\", "/");
-
                 bool fexist = File.Exists(mdir + libr + "\\" + chname);
 
                 if (fexist == false)
@@ -544,12 +563,10 @@ namespace hungry_launcher
                         }
                         else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
                         {
-
                             string getlib = "https://libraries.minecraft.net/" + url;
                             WebClient libdown = new WebClient();
                             System.IO.Directory.CreateDirectory(mdir + libr);
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
-
                         }
                         else if (item.url != null)
                         {
@@ -587,7 +604,6 @@ namespace hungry_launcher
                 }
                 if (((item.name.Contains("org.lwjgl.lwjgl:lwjgl-platform")) && (item.natives.windows != null)) || ((item.name.Contains("net.java.jinput:jinput-platform")) && (item.natives.windows != null)))
                 {
-
                     string zipPath = mdir + libr + "\\" + fname;
                     string extractPath = mdir + "natives";
                     ZipFile.ExtractToDirectory(zipPath, extractPath);
@@ -600,14 +616,11 @@ namespace hungry_launcher
                         cp = " -Djava.library.path=" + extractPath + " -cp " + cp;
                     }
                 }
-
             }
             mdir = mdir.Replace("libraries", "versions");
             cp = cp + mdir + vers + "\\" + vers + ".jar";
             cp = cp + " " + libs.mainClass + " " + libs.minecraftArguments;
             return cp;
         }
-
-
     }
 }
