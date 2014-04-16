@@ -25,7 +25,7 @@ namespace hungry_launcher
         string mversion;
         string alocmem;
         string[] mver;
-        hungry_launcher.utils.Version[] downver;
+        utils.Version[] downver;
         bool console, autoclose;
 
         public Form1()
@@ -83,6 +83,10 @@ namespace hungry_launcher
                     comboBox3.Items.Add(item.id);
                 }
             }
+            if (comboBox3.Items.Count > 0)
+                button3.Enabled = true;
+            else
+                button3.Enabled = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -154,7 +158,6 @@ namespace hungry_launcher
                                         {
                                             memory = process.WorkingSet64 / 1024;
                                         }
-
                                     }
                                     this.Close();
                                 }
@@ -203,6 +206,13 @@ namespace hungry_launcher
             Properties.Settings.Default.mdir = mdir;
             Properties.Settings.Default.Save();
             comboBox1.Text = null;
+        }
+        private void button3_Click(object sender, EventArgs e)
+        {
+            mversion = comboBox3.Text;
+            utils.getver(comboBox3.Text, mdir);
+            utils.donwlibs(mversion, mdir);
+            utils.getassets(comboBox3.Text, mdir);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -363,7 +373,7 @@ namespace hungry_launcher
                 {
                     vertext = sr.ReadToEnd();
                 }
-            }         
+            }
             McVersion versions = JsonConvert.DeserializeObject<McVersion>(vertext);
             List<hungry_launcher.utils.Version> allver = versions.versions;
             List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
@@ -606,10 +616,17 @@ namespace hungry_launcher
                 {
                     string zipPath = mdir + libr + "\\" + fname;
                     string extractPath = mdir + "natives";
-                    ZipFile.ExtractToDirectory(zipPath, extractPath);
-                    if (Directory.Exists(extractPath + "\\META-INF"))
+                    try
                     {
-                        Directory.Delete(extractPath + "\\META-INF", true);
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                        if (Directory.Exists(extractPath + "\\META-INF"))
+                        {
+                            Directory.Delete(extractPath + "\\META-INF", true);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
                     }
                     if (!cp.Contains(" -Djava.library.path="))
                     {
@@ -621,6 +638,47 @@ namespace hungry_launcher
             cp = cp + mdir + vers + "\\" + vers + ".jar";
             cp = cp + " " + libs.mainClass + " " + libs.minecraftArguments;
             return cp;
+        }
+
+
+
+        public class Assets
+        {
+            public Dictionary<string, Objects> objects { get; set; }
+        }
+        public class Objects
+        {
+
+            public string hash { get; set; }
+            public int size { get; set; }
+        }
+
+        public static void getassets(string vers, string mdir)
+        {
+            string assetsjson = "";
+            string format = "";
+            string getassets = "";
+            for (int i = 0, j = vers.Length - 1; i < vers.Length; i++, j--)
+                if (vers[i] != '.') assetsjson = assetsjson + vers[i];
+            if (Convert.ToInt32(assetsjson) < 172) format = assetsjson = "legacy.json";
+            else format = assetsjson = vers + ".json";
+
+            assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
+            WebClient assetsdown = new WebClient();
+            if (Directory.Exists(mdir + "\\assets\\vers\\"))
+            {
+                Directory.Delete(mdir + "\\assets\\vers\\", true);
+            }
+            Directory.CreateDirectory(mdir + "\\assets\\vers\\");
+            assetsdown.DownloadFile(assetsjson, mdir + "\\assets\\vers\\" + format);
+            Assets assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\vers\\" + format));
+
+            foreach (KeyValuePair<string, Objects> i in assets.objects)
+            {
+
+                //
+            }
+
         }
     }
 }
