@@ -136,7 +136,7 @@ namespace hungry_launcher
                             //   launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
                             Thread.Sleep(1);
                             launch = launch.Replace("${game_assets}", a + mdir + "\\assets\\virtual\\legacy" + a);
-                          //  launch = launch.Replace("${assets_root}", a + mdir + "\\assets\\virtual\\legacy" + a);
+                            //  launch = launch.Replace("${assets_root}", a + mdir + "\\assets\\virtual\\legacy" + a);
                             //launch = launch.Replace(" --uuid ${auth_uuid}", "");
                             //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
                             launch = launch.Replace("${user_properties}", "{}");
@@ -677,13 +677,16 @@ namespace hungry_launcher
 
             assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
             WebClient assetsjsondown = new WebClient();
+
+            Directory.CreateDirectory(mdir + "\\assets\\vers\\");
+            assetsjsondown.DownloadFile(assetsjson, mdir + "\\assets\\vers\\" + format);
+            Assets assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\vers\\" + format));
+
             if (Directory.Exists(mdir + "\\assets\\vers\\"))
             {
                 Directory.Delete(mdir + "\\assets\\vers\\", true);
             }
-            Directory.CreateDirectory(mdir + "\\assets\\vers\\");
-            assetsjsondown.DownloadFile(assetsjson, mdir + "\\assets\\vers\\" + format);
-            Assets assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\vers\\" + format));
+
 
             foreach (KeyValuePair<string, Objects> i in assets.objects)
             {
@@ -692,28 +695,35 @@ namespace hungry_launcher
 
                 WebClient assetsdown = new WebClient();
 
-                    // удалять все после последнего слеша в i.Key.First() для создания папок
-                    Thread.Sleep(1);
-                    names = i.Key.ToString();
+                // удалять все после последнего слеша в i.Key.First() для создания папок
+                Thread.Sleep(1);
+                names = i.Key.ToString();
+                if (names.Contains("/"))
+                {
                     if (names.LastIndexOf("/") > 0)
                         names = names.Substring(0, names.LastIndexOf("/"));
                     names = names.Replace("/", "\\");
+                    names = "\\" + names;
+                }
+                else
+                {
+                    names = null;
+                }
 
-                    if (Directory.Exists(mdir + "\\assets\\virtual\\legacy\\" + names))
-                    {
-                        Directory.Delete(mdir + "\\assets\\virtual\\legacy\\" + names,true);
-                    }
+                if (!Directory.Exists(mdir + "\\assets\\vers\\" + names))
+                {
                     Directory.CreateDirectory(mdir + "\\assets\\virtual\\legacy\\" + names);
+                }
 
-                    if (Directory.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2)))
-                    {
-                        Directory.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2), true);
-                    }
+
+                if (!Directory.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2)))
+                {
                     Directory.CreateDirectory(mdir + "\\assets\\objects\\" + hash.Substring(0, 2));
+                }
 
-                    assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
 
-                    File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy\\" + names + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")+1));
+                File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
             }
 
         }
