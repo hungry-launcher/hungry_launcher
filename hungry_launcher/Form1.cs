@@ -32,9 +32,6 @@ namespace hungry_launcher
         {
             InitializeComponent();
         }
-        private void button2_Click(object sender, EventArgs e)
-        {
-        }
         private void Form1_Load(object sender, EventArgs e)
         {
             string path;
@@ -188,7 +185,7 @@ namespace hungry_launcher
             Properties.Settings.Default.Save();
         }
 
-        private void button2_Click_1(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             string path;
             using (var dialog = new FolderBrowserDialog())
