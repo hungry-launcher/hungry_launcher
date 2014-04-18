@@ -14,6 +14,7 @@ using System.IO;
 using System.IO.Compression;
 using Microsoft.Win32;
 using System.Threading;
+using System.Security.Cryptography;
 using Newtonsoft.Json;
 
 
@@ -125,13 +126,12 @@ namespace hungry_launcher
                             char a = '"';
                             string memorys = " -Xms512M -Xmx{0}";
                             memorys = string.Format(memorys, alocmem);
-                            string launch = utils.donwlibs(mversion, mdir);
+                            string launch = utils.donwlibs(mversion, mdir, false);
 
                             launch = launch.Replace("${auth_player_name}", a + username + a);
                             launch = launch.Replace("${version_name}", a + mversion + a);
                             launch = launch.Replace("${game_directory}", a + mdir + a);
-                            //   launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
-                            Thread.Sleep(1);
+                            //launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
                             //launch = launch.Replace(" --uuid ${auth_uuid}", "");
                             //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
                             launch = launch.Replace("${user_properties}", "{}");
@@ -182,7 +182,6 @@ namespace hungry_launcher
             Properties.Settings.Default.Textbox = textBox1.Text;
             Properties.Settings.Default.Save();
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             string path;
@@ -204,22 +203,19 @@ namespace hungry_launcher
         {
             mversion = comboBox3.Text;
             utils.getver(comboBox3.Text, mdir);
-            utils.donwlibs(mversion, mdir);
+            utils.donwlibs(mversion, mdir, true);
             utils.getassets(mdir);
         }
-
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.chBox = checkBox1.Checked;
             Properties.Settings.Default.Save();
         }
-
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.chBox2 = checkBox2.Checked;
             Properties.Settings.Default.Save();
         }
-
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (checkBox2.Checked == true)
@@ -229,13 +225,11 @@ namespace hungry_launcher
             }
 
         }
-
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.chBox3 = checkBox3.Checked;
             Properties.Settings.Default.Save();
         }
-
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.combobox = comboBox1.Text;
@@ -259,13 +253,11 @@ namespace hungry_launcher
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
         }
-
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default.Textbox3 = textBox3.Text;
             Properties.Settings.Default.Save();
         }
-
         private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!Char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
@@ -295,7 +287,9 @@ namespace hungry_launcher
 
     public class utils
     {
-      static string assetsversion = "";
+        static string assetsversion = "";
+
+
         public static string getjavapath()
         {
             string javapath = null;
@@ -398,13 +392,18 @@ namespace hungry_launcher
         public static void getver(string ver, string mdir)
         {
             //Дописать проверку если существует - окошко bool fexist = File.Exists(mdir + libr + "\\" + chname);
-            Thread.Sleep(1);
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
             WebClient jsondown = new WebClient();
             WebClient verdown = new WebClient();
             System.IO.Directory.CreateDirectory(mdir + "\\versions\\" + ver);
             Directory.SetCurrentDirectory(mdir + "\\versions\\" + ver);
+            bool fexist = File.Exists(mdir + "\\versions\\" + ver);
+            if (fexist == true)
+            {
+                File.Delete(mdir + "\\versions\\" + ver + ".json");
+                File.Delete(mdir + "\\versions\\" + ver + ".jar");
+            }
             jsondown.DownloadFile(verjson, ver + ".json");
             verdown.DownloadFile(verget, ver + ".jar");
         }
@@ -445,13 +444,11 @@ namespace hungry_launcher
             public string assets { get; set; }
             public List<Library> libraries { get; set; }
         }
-       
-        public static string donwlibs(string vers, string mdir)
+
+        public static string donwlibs(string vers, string mdir, bool redownload)
         {
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
-
             string cp = "";
-
             mdir = mdir + "\\libraries\\";
 
             if (Directory.Exists(mdir + "natives"))
@@ -555,9 +552,8 @@ namespace hungry_launcher
                 url = libr + '/' + fname;
                 url = url.Replace("\\", "/");
                 bool fexist = File.Exists(mdir + libr + "\\" + chname);
-                //Дописать проверку sha1
-                Thread.Sleep(1);
-                if (fexist == false)
+
+                if (fexist == false || redownload == true)
                 {
                     try
                     {
@@ -596,8 +592,7 @@ namespace hungry_launcher
                             }
                         }
                     }
-
-                    catch (System.Net.WebException e)
+                    catch
                     {
                         MessageBox.Show("Cant download file " + fname);
                     }
@@ -638,7 +633,7 @@ namespace hungry_launcher
             mdir = mdir.Replace("\\versions", "");
             char a = '"';
             if (libs.assets != null)
-            {       
+            {
                 cp = cp.Replace("${assets_index_name}", libs.assets);
                 assetsversion = libs.assets;
                 cp = cp.Replace("${assets_root}", a + mdir + "\\assets" + a);
@@ -651,14 +646,12 @@ namespace hungry_launcher
             return cp;
         }
 
-
         public class Assets
         {
             public Dictionary<string, Objects> objects { get; set; }
         }
         public class Objects
         {
-
             public string hash { get; set; }
             public int size { get; set; }
         }
@@ -700,17 +693,15 @@ namespace hungry_launcher
                 assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\indexes\\" + format));
             }
 
-
-
             foreach (KeyValuePair<string, Objects> i in assets.objects)
             {
                 string hash = Convert.ToString(i.Value.hash);
                 int size = Convert.ToInt32(i.Value.size);
+                bool hashok = false;
+                bool fexist = false;
+                string fSHA1 = "";
 
                 WebClient assetsdown = new WebClient();
-
-                // удалять все после последнего слеша в i.Key.First() для создания папок
-                Thread.Sleep(1);
                 names = i.Key.ToString();
                 if (names.Contains("/"))
                 {
@@ -724,27 +715,63 @@ namespace hungry_launcher
                     names = null;
                 }
 
-                //     bool fexist = File.Exists(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
-
-                //     if (fexist == false)
-                //     {
-                if (!Directory.Exists(mdir + "\\assets\\vers\\" + names))
+                if (version < 172)
                 {
-                    Directory.CreateDirectory(mdir + "\\assets\\virtual\\legacy\\" + names);
+                    fexist = File.Exists(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                    if (fexist == true)
+                    {
+                        using (FileStream stream = File.OpenRead(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1)))
+                        {
+                            SHA1Managed sha = new SHA1Managed();
+                            byte[] checksum = sha.ComputeHash(stream);
+                            fSHA1 = BitConverter.ToString(checksum).Replace("-", string.Empty);
+                            fSHA1 = fSHA1.ToLower();
+                        }
+                        if (fSHA1 == hash) hashok = true;
+                    }
+                }
+                else
+                {
+                    fexist = File.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                    if (fexist == true)
+                    {
+                        using (FileStream stream = File.OpenRead(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash))
+                        {
+                            SHA1Managed sha = new SHA1Managed();
+                            byte[] checksum = sha.ComputeHash(stream);
+                            fSHA1 = BitConverter.ToString(checksum).Replace("-", string.Empty);
+                            fSHA1 = fSHA1.ToLower();
+                        }
+                        if (fSHA1 == hash) hashok = true;
+                    }
                 }
 
-
-                if (!Directory.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2)))
+                if ((fexist == false) || (fexist == true && hashok == false))
                 {
-                    Directory.CreateDirectory(mdir + "\\assets\\objects\\" + hash.Substring(0, 2));
+                    if (!Directory.Exists(mdir + "\\assets\\vers\\" + names))
+                    {
+                        Directory.CreateDirectory(mdir + "\\assets\\virtual\\legacy\\" + names);
+                    }
+
+                    if (!Directory.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2)))
+                    {
+                        Directory.CreateDirectory(mdir + "\\assets\\objects\\" + hash.Substring(0, 2));
+                    }
+
+                    if (fexist == false)
+                    {
+                        assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                        File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                    }
+                    else
+                    {
+                        File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                        File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                        assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                        File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                    }
                 }
-
-                assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-
-                File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
-                //  }
             }
-
         }
     }
 }
