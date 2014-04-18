@@ -132,12 +132,10 @@ namespace hungry_launcher
                             launch = launch.Replace("${game_directory}", a + mdir + a);
                             //   launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
                             Thread.Sleep(1);
-                            launch = launch.Replace("${game_assets}", a + mdir + "\\assets\\virtual\\legacy" + a);
-                            //  launch = launch.Replace("${assets_root}", a + mdir + "\\assets\\virtual\\legacy" + a);
                             //launch = launch.Replace(" --uuid ${auth_uuid}", "");
                             //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
                             launch = launch.Replace("${user_properties}", "{}");
-                            launch = launch.Replace("${user_type}", a + "legacy" + a);
+                            launch = launch.Replace("${user_type}", a + "mojang" + a);
 
                             launch = memorys + launch;
                             if (console == true)
@@ -207,7 +205,7 @@ namespace hungry_launcher
             mversion = comboBox3.Text;
             utils.getver(comboBox3.Text, mdir);
             utils.donwlibs(mversion, mdir);
-            utils.getassets(comboBox3.Text, mdir);
+            utils.getassets(mdir);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -297,6 +295,7 @@ namespace hungry_launcher
 
     public class utils
     {
+      static string assetsversion = "";
         public static string getjavapath()
         {
             string javapath = null;
@@ -446,7 +445,7 @@ namespace hungry_launcher
             public string assets { get; set; }
             public List<Library> libraries { get; set; }
         }
-
+       
         public static string donwlibs(string vers, string mdir)
         {
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
@@ -636,11 +635,21 @@ namespace hungry_launcher
             mdir = mdir.Replace("libraries", "versions");
             cp = cp + mdir + vers + "\\" + vers + ".jar";
             cp = cp + " " + libs.mainClass + " " + libs.minecraftArguments;
+            mdir = mdir.Replace("\\versions", "");
             char a = '"';
-            cp = cp.Replace("${assets_index_name}", a + libs.assets + a);
+            if (libs.assets != null)
+            {       
+                cp = cp.Replace("${assets_index_name}", libs.assets);
+                assetsversion = libs.assets;
+                cp = cp.Replace("${assets_root}", a + mdir + "\\assets" + a);
+            }
+            else
+            {
+                assetsversion = "old";
+                cp = cp.Replace("${game_assets}", a + mdir + "\\assets\\virtual\\legacy" + a);
+            }
             return cp;
         }
-
 
 
         public class Assets
@@ -654,35 +663,43 @@ namespace hungry_launcher
             public int size { get; set; }
         }
 
-        public static void getassets(string vers, string mdir)
+        public static void getassets(string mdir)
         {
+            if (assetsversion == "old")
+            {
+                assetsversion = "0";
+            }
             string assetsjson = "";
             string format = "";
             string names = "";
-            for (int i = 0, j = vers.Length - 1; i < vers.Length; i++, j--)
-                if (vers[i] != '.') assetsjson = assetsjson + vers[i];
+            for (int i = 0; i < assetsversion.Length; i++)
+                if (assetsversion[i] != '.') assetsjson = assetsjson + assetsversion[i];
             int version = Convert.ToInt32(assetsjson);
+
+            Assets assets;
 
             if (version < 172)
             {
                 format = assetsjson = "legacy.json";
+                Directory.CreateDirectory(mdir + "\\assets\\virtual\\legacy\\indexes\\");
+                WebClient assetsjsondown = new WebClient();
+
+                assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
+                assetsjsondown.DownloadFile(assetsjson, mdir + "\\assets\\virtual\\legacy\\indexes\\" + format);
+                assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\virtual\\legacy\\indexes\\" + "legacy.json"));
             }
             else
             {
-                format = assetsjson = vers + ".json";
+                format = assetsjson = assetsversion + ".json";
+                Directory.CreateDirectory(mdir + "\\assets\\indexes\\");
+
+                WebClient assetsjsondown = new WebClient();
+
+                assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
+                assetsjsondown.DownloadFile(assetsjson, mdir + "\\assets\\indexes\\" + format);
+                assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\indexes\\" + format));
             }
 
-            assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
-            WebClient assetsjsondown = new WebClient();
-
-            Directory.CreateDirectory(mdir + "\\assets\\vers\\");
-            assetsjsondown.DownloadFile(assetsjson, mdir + "\\assets\\vers\\" + format);
-            Assets assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\vers\\" + format));
-
-            if (Directory.Exists(mdir + "\\assets\\vers\\"))
-            {
-                Directory.Delete(mdir + "\\assets\\vers\\", true);
-            }
 
 
             foreach (KeyValuePair<string, Objects> i in assets.objects)
@@ -707,6 +724,10 @@ namespace hungry_launcher
                     names = null;
                 }
 
+                //     bool fexist = File.Exists(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+
+                //     if (fexist == false)
+                //     {
                 if (!Directory.Exists(mdir + "\\assets\\vers\\" + names))
                 {
                     Directory.CreateDirectory(mdir + "\\assets\\virtual\\legacy\\" + names);
@@ -721,6 +742,7 @@ namespace hungry_launcher
                 assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
 
                 File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                //  }
             }
 
         }
