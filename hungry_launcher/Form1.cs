@@ -202,9 +202,12 @@ namespace hungry_launcher
         private void button3_Click(object sender, EventArgs e)
         {
             mversion = comboBox3.Text;
-            utils.getver(comboBox3.Text, mdir);
-            utils.donwlibs(mversion, mdir, true);
-            utils.getassets(mdir);
+            if (mversion != null)
+            {
+                utils.getver(comboBox3.Text, mdir);
+                utils.donwlibs(mversion, mdir, true);
+                utils.getassets(mdir);
+            }
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -352,28 +355,39 @@ namespace hungry_launcher
         public static hungry_launcher.utils.Version[] getversions(string mdir)
         {
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
-            string vertext = String.Empty;
-            WebRequest req = WebRequest.Create(jsonurl);
-            WebResponse resp = req.GetResponse();
-            using (Stream stream = resp.GetResponseStream())
+            string vertext = "";
+            try
             {
-                using (StreamReader sr = new StreamReader(stream))
+                using (var client = new WebClient())
+                using (var checknet = client.OpenRead(jsonurl))
                 {
-                    vertext = sr.ReadToEnd();
-                }
-            }
-            McVersion versions = JsonConvert.DeserializeObject<McVersion>(vertext);
-            List<hungry_launcher.utils.Version> allver = versions.versions;
-            List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
+                    WebRequest req = WebRequest.Create(jsonurl);
+                    WebResponse resp = req.GetResponse();
+                    using (Stream stream = resp.GetResponseStream())
+                    {
+                        using (StreamReader sr = new StreamReader(stream))
+                        {
+                            vertext = sr.ReadToEnd();
+                        }
+                    }
+                    McVersion versions = JsonConvert.DeserializeObject<McVersion>(vertext);
+                    List<hungry_launcher.utils.Version> allver = versions.versions;
+                    List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
 
-            foreach (var item in allver)
-            {
-                if (item.type == "release")
-                {
-                    release.Add(item);
+                    foreach (var item in allver)
+                    {
+                        if (item.type == "release")
+                        {
+                            release.Add(item);
+                        }
+                    }
+                    return release.ToArray();
                 }
             }
-            return release.ToArray();
+            catch 
+            {
+                return null;
+            }             
         }
 
         public class Version
