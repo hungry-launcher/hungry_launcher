@@ -7,7 +7,13 @@ TO DO LIST:
 
       Better natives path; [+]
 	  
-	  Auto libraries detection; [+?]
+	  Auto libraries detection; [+]
+	  
+	  Multithreading;
+	  
+	  Remember installation path;
+	  
+	  Security mode(all files are checked);
 
       Tab for settings;
 
