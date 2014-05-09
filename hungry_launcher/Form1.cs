@@ -27,7 +27,7 @@ namespace hungry_launcher
         string alocmem;
         string[] mver;
         utils.Version[] downver;
-        bool console, autoclose;
+        bool console, autoclose, downloading;
 
         public Form1()
         {
@@ -145,7 +145,7 @@ namespace hungry_launcher
                                 minecraft.StartInfo = mcstart;
                                 minecraft.Start();
                                 int procid = minecraft.Id;
-                                if (autoclose == true)
+                                if (autoclose == true && checkBox3.Enabled == true)
                                 {
                                     while (memory < 300000)
                                     {
@@ -162,7 +162,7 @@ namespace hungry_launcher
                                 minecraft.StartInfo = mcstart;
                                 minecraft.Start();
                                 int procid = minecraft.Id;
-                                if (autoclose == true)
+                                if (autoclose == true && checkBox3.Enabled == true)
                                 {
                                     while (memory < 300000)
                                     {
@@ -186,6 +186,9 @@ namespace hungry_launcher
         {
             string path;
             using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.SelectedPath = mdir;
+                dialog.ShowNewFolderButton = true;
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     path = dialog.SelectedPath;
@@ -195,6 +198,7 @@ namespace hungry_launcher
                 {
                     path = mdir;
                 }
+            }
             Properties.Settings.Default.mdir = mdir;
             Properties.Settings.Default.Save();
             comboBox1.Text = null;
@@ -203,6 +207,8 @@ namespace hungry_launcher
         {
             button3.Enabled = false;
             comboBox3.Enabled = false;
+            checkBox3.Enabled = false;
+            downloading = true;
 
             backgroundWorker1.RunWorkerAsync();
 
@@ -242,7 +248,9 @@ namespace hungry_launcher
         {
             this.button3.Enabled = true;
             this.comboBox3.Enabled = true;
-
+            comboBox3.Text = "";
+            this.checkBox3.Enabled = true;
+            this.downloading = false;
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -275,13 +283,19 @@ namespace hungry_launcher
         }
         private void comboBox1_Dropdown(object sender, System.EventArgs e)
         {
+            string text = comboBox1.Text;
             mver = utils.mineversions(mdir);
             comboBox1.Items.Clear();
             if (mver != null)
             {
                 foreach (Object i in mver)
                 {
-                    comboBox1.Items.Add(i);
+                    if (downloading == true && i.ToString() == comboBox3.Text) continue;
+                    else
+                    {
+                        comboBox1.Items.Add(i);
+                        if (i.ToString() == text) comboBox1.Text = i.ToString();
+                    }
                 }
             }
             Properties.Settings.Default.combobox = comboBox1.Text;

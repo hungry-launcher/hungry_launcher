@@ -11,9 +11,9 @@ TO DO LIST:
 	  
 	  Multithreading[+];
 	  
-	  Disable using non downloaded client;
+	  Disable using non downloaded client[+];
 	  
-	  Remember installation path;
+	  Remember installation path and last version[+];
 	  
 	  Security mode(all files are checked);
 
