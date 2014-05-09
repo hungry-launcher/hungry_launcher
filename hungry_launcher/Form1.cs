@@ -140,37 +140,37 @@ namespace hungry_launcher
                             launch = memorys + launch;
                             if (console == true)
                             {
+                                Process minecraft = new Process();
                                 ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
-                                Process.Start(mcstart);
+                                minecraft.StartInfo = mcstart;
+                                minecraft.Start();
+                                int procid = minecraft.Id;
                                 if (autoclose == true)
                                 {
-                                    while (memory < 400000)
+                                    while (memory < 300000)
                                     {
-                                        System.Diagnostics.Process[] pr = Process.GetProcessesByName("java");
-                                        foreach (Process process in pr)
-                                        {
-                                            memory = process.WorkingSet64 / 1024;
-                                        }
+                                        System.Diagnostics.Process pr = Process.GetProcessById(procid);
+                                        memory = pr.WorkingSet64 / 1024;
                                     }
                                     this.Close();
                                 }
                             }
                             else
                             {
-                                ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
-                                Process.Start(mcstart);
+                                Process minecraft = new Process();
+                                ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
+                                minecraft.StartInfo = mcstart;
+                                minecraft.Start();
+                                int procid = minecraft.Id;
                                 if (autoclose == true)
                                 {
-                                    while (memory < 400000)
+                                    while (memory < 300000)
                                     {
-                                        System.Diagnostics.Process[] pr = Process.GetProcessesByName("javaw");
-                                        foreach (Process process in pr)
-                                        {
-                                            memory = process.WorkingSet64 / 1024;
-                                        }
+                                        System.Diagnostics.Process pr = Process.GetProcessById(procid);
+                                        memory = pr.WorkingSet64 / 1024;
                                     }
+                                    this.Close();
                                 }
-                                this.Close();
                             }
                         }
                     }
@@ -201,13 +201,48 @@ namespace hungry_launcher
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            mversion = comboBox3.Text;
+            button3.Enabled = false;
+            comboBox3.Enabled = false;
+
+            backgroundWorker1.RunWorkerAsync();
+
+        }
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+            string combo3text = "";
+            bool but3enab = false;
+            bool com3enab = false;
+            MethodInvoker getValues = new MethodInvoker(delegate()
+            {
+                combo3text = comboBox3.Text;
+                but3enab = button3.Enabled;
+                com3enab = comboBox3.Enabled;
+            });
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke(getValues);
+            }
+            else
+            {
+                getValues();
+            }
+
+            mversion = combo3text;
             if (mversion != null)
             {
-                utils.getver(comboBox3.Text, mdir);
+                utils.getver(mversion, mdir);
                 utils.donwlibs(mversion, mdir, true);
                 utils.getassets(mdir);
             }
+
+        }
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.button3.Enabled = true;
+            this.comboBox3.Enabled = true;
+
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -384,10 +419,10 @@ namespace hungry_launcher
                     return release.ToArray();
                 }
             }
-            catch 
+            catch
             {
                 return null;
-            }             
+            }
         }
 
         public class Version

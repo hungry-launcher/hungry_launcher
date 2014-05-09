@@ -9,7 +9,7 @@ TO DO LIST:
 	  
 	  Auto libraries detection; [+]
 	  
-	  Multithreading;
+	  Multithreading[+];
 	  
 	  Remember installation path;
 	  
@@ -23,7 +23,7 @@ TO DO LIST:
       
       Using progress bar;
 
-      Auto upload minecraft if emty; 
+      Auto upload if something is empty; 
 
       Licence/pirate mode;
 
