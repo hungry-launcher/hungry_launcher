@@ -71,7 +71,7 @@ namespace hungry_launcher
                     comboBox1.Items.Add(i);
                 }
             }
-            comboBox1.Text = Properties.Settings.Default.combobox;
+            if (mver.Contains(Properties.Settings.Default.combobox)) comboBox1.Text = Properties.Settings.Default.combobox;
 
             downver = utils.getversions(mdir);
             if (downver != null)
@@ -81,10 +81,6 @@ namespace hungry_launcher
                     comboBox3.Items.Add(item.id);
                 }
             }
-            if (comboBox3.Items.Count > 0)
-                button3.Enabled = true;
-            else
-                button3.Enabled = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -205,13 +201,15 @@ namespace hungry_launcher
         }
         private void button3_Click(object sender, EventArgs e)
         {
-            button3.Enabled = false;
-            comboBox3.Enabled = false;
-            checkBox3.Enabled = false;
-            downloading = true;
+            if (comboBox3.Text != "")
+            {
+                button3.Enabled = false;
+                comboBox3.Enabled = false;
+                checkBox3.Enabled = false;
+                downloading = true;
 
-            backgroundWorker1.RunWorkerAsync();
-
+                backgroundWorker1.RunWorkerAsync();
+            }
         }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -290,14 +288,17 @@ namespace hungry_launcher
             {
                 foreach (Object i in mver)
                 {
-                    if (downloading == true && i.ToString() == comboBox3.Text) continue;
+                    if (downloading == true && i.ToString() == comboBox3.Text)
+                    {
+                        continue;
+                    }
                     else
                     {
                         comboBox1.Items.Add(i);
-                        if (i.ToString() == text) comboBox1.Text = i.ToString();
                     }
                 }
             }
+            if (mver.Contains(text)) comboBox1.Text = text;
             Properties.Settings.Default.combobox = comboBox1.Text;
             Properties.Settings.Default.Save();
         }
@@ -319,7 +320,6 @@ namespace hungry_launcher
         }
         private void comboBox3_Dropdown(object sender, System.EventArgs e)
         {
-            downver = utils.getversions(mdir);
             comboBox3.Items.Clear();
             if (downver != null)
             {
@@ -341,8 +341,7 @@ namespace hungry_launcher
     {
         static string assetsversion = "";
 
-
-        public static string getjavapath()
+        public static string getjavapath()  // Путь установки java
         {
             string javapath = null;
             string jdkKey = "SOFTWARE\\JavaSoft\\Java Development Kit";
@@ -377,7 +376,7 @@ namespace hungry_launcher
             }
             return javapath;
         }
-        public static string[] mineversions(string mdir)
+        public static string[] mineversions(string mdir)  // Список установленных версий
         {
             string versions = "{0}\\versions\\";
             versions = string.Format(versions, mdir);
@@ -401,42 +400,40 @@ namespace hungry_launcher
             else return null;
         }
 
-        public static hungry_launcher.utils.Version[] getversions(string mdir)
+        public static hungry_launcher.utils.Version[] getversions(string mdir)   //Получить список версий из интернета 
         {
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
-            string vertext = "";
+
+            WebClient client;
+            Stream checknet;
+
             try
             {
-                using (var client = new WebClient())
-                using (var checknet = client.OpenRead(jsonurl))
-                {
-                    WebRequest req = WebRequest.Create(jsonurl);
-                    WebResponse resp = req.GetResponse();
-                    using (Stream stream = resp.GetResponseStream())
-                    {
-                        using (StreamReader sr = new StreamReader(stream))
-                        {
-                            vertext = sr.ReadToEnd();
-                        }
-                    }
-                    McVersion versions = JsonConvert.DeserializeObject<McVersion>(vertext);
-                    List<hungry_launcher.utils.Version> allver = versions.versions;
-                    List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
-
-                    foreach (var item in allver)
-                    {
-                        if (item.type == "release")
-                        {
-                            release.Add(item);
-                        }
-                    }
-                    return release.ToArray();
-                }
+                client = new WebClient();
+                checknet = client.OpenRead(jsonurl);
             }
             catch
             {
                 return null;
             }
+
+            bool fexist = File.Exists(mdir + "\\versions.json");
+            if (fexist == true)
+                File.Delete(mdir + "\\versions.json");
+            client.DownloadFile(jsonurl, mdir + "\\versions.json");
+
+            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
+            List<hungry_launcher.utils.Version> allver = versions.versions;
+            List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
+
+            foreach (var item in allver)
+            {
+                if (item.type == "release")
+                {
+                    release.Add(item);
+                }
+            }
+            return release.ToArray();
         }
 
         public class Version
@@ -452,7 +449,7 @@ namespace hungry_launcher
             public List<Version> versions { get; set; }
         }
 
-        public static void getver(string ver, string mdir)
+        public static void getver(string ver, string mdir)   // Скачать jar и json версии
         {
             //Дописать проверку если существует - окошко bool fexist = File.Exists(mdir + libr + "\\" + chname);
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
@@ -508,7 +505,7 @@ namespace hungry_launcher
             public List<Library> libraries { get; set; }
         }
 
-        public static string donwlibs(string vers, string mdir, bool redownload)
+        public static string donwlibs(string vers, string mdir, bool redownload)  // Скачать библиотеки
         {
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
             string cp = "";
@@ -719,7 +716,7 @@ namespace hungry_launcher
             public int size { get; set; }
         }
 
-        public static void getassets(string mdir)
+        public static void getassets(string mdir)    // Скачать звуки и тд.
         {
             if (assetsversion == "old")
             {
