@@ -13,6 +13,10 @@ TO DO LIST:
 	  
 	  Disable using non downloaded client[+];
 	  
+	  Split up getting string for launch and donwloading libs;
+	  
+	  Fix assets downloading;
+	  
 	  Remember installation path and last version[+];
 	  
 	  Security mode(all files are checked);

@@ -81,6 +81,11 @@ namespace hungry_launcher
                     comboBox3.Items.Add(item.id);
                 }
             }
+            else
+            {
+                button3.Enabled = false;
+                comboBox3.Enabled = false;
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -208,8 +213,12 @@ namespace hungry_launcher
                 checkBox3.Enabled = false;
                 downloading = true;
 
+                if (comboBox1.Text == comboBox3.Text) comboBox1.Text = null;
+
                 backgroundWorker1.RunWorkerAsync();
             }
+
+
         }
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -417,10 +426,19 @@ namespace hungry_launcher
                 return null;
             }
 
+            StreamReader sr = new StreamReader(checknet);
+
             bool fexist = File.Exists(mdir + "\\versions.json");
-            if (fexist == true)
-                File.Delete(mdir + "\\versions.json");
-            client.DownloadFile(jsonurl, mdir + "\\versions.json");
+            if (fexist == false)
+                client.DownloadFile(jsonurl, mdir + "\\versions.json");
+            else
+            {
+                if (sr.ReadToEnd() != File.ReadAllText(mdir + "\\versions.json"))
+                {
+                    File.Delete(mdir + "\\versions.json");
+                    client.DownloadFile(jsonurl, mdir + "\\versions.json");
+                }
+            }
 
             McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
             List<hungry_launcher.utils.Version> allver = versions.versions;
@@ -464,8 +482,24 @@ namespace hungry_launcher
                 File.Delete(mdir + "\\versions\\" + ver + ".json");
                 File.Delete(mdir + "\\versions\\" + ver + ".jar");
             }
-            jsondown.DownloadFile(verjson, ver + ".json");
-            verdown.DownloadFile(verget, ver + ".jar");
+
+            try
+            {
+                jsondown.DownloadFile(verjson, ver + ".json");
+            }
+            catch
+            {
+                MessageBox.Show("Cant download " + ver + ".json");
+            }
+
+            try
+            {
+                verdown.DownloadFile(verget, ver + ".jar");
+            }
+            catch
+            {
+                MessageBox.Show("Cant download " + ver + ".jar");
+            }
         }
 
         public class Natives
@@ -818,17 +852,24 @@ namespace hungry_launcher
                         Directory.CreateDirectory(mdir + "\\assets\\objects\\" + hash.Substring(0, 2));
                     }
 
-                    if (fexist == false)
+                    try
                     {
-                        assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                        File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                        if (fexist == false)
+                        {
+                            assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                            File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                        }
+                        else
+                        {
+                            File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                            File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                            assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                            File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                        }
                     }
-                    else
+                    catch
                     {
-                        File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                        File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
-                        assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                        File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                        MessageBox.Show("Cant download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
                     }
                 }
             }
