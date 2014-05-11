@@ -11,9 +11,6 @@
     <Setting Name="chBox3" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="chBox4" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="Textbox" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

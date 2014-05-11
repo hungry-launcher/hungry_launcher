@@ -22,12 +22,12 @@ namespace hungry_launcher
 {
     public partial class Form1 : Form
     {
-        private string mdir;
-        private string mversion;
-        private string alocmem;
-        private string[] mver;
-        private utils.Version[] downver;
-        private bool console, autoclose, downloading;
+        string mdir;
+        string mversion;
+        string alocmem;
+        string[] mver;
+        utils.Version[] downver;
+        bool console, autoclose, downloading;
 
         public Form1()
         {
@@ -50,13 +50,12 @@ namespace hungry_launcher
                     {
                         path = mdir;
                     }
-                Properties.Settings.Default.Textbox3 = mdir;
+                Properties.Settings.Default.mdir = mdir;
             }
 
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             checkBox3.Checked = Properties.Settings.Default.chBox3;
-            checkBox4.Checked = Properties.Settings.Default.chBox4;
             if (checkBox2.Checked == true)
             {
                 textBox2.Text = Properties.Settings.Default.Textbox2;
@@ -270,17 +269,6 @@ namespace hungry_launcher
             Properties.Settings.Default.chBox2 = checkBox2.Checked;
             Properties.Settings.Default.Save();
         }
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox3 = checkBox3.Checked;
-            Properties.Settings.Default.Save();
-        }
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox4 = checkBox4.Checked;
-            Properties.Settings.Default.Save();
-            utils.debug = checkBox4.Checked;
-        }
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (checkBox2.Checked == true)
@@ -289,6 +277,11 @@ namespace hungry_launcher
                 Properties.Settings.Default.Save();
             }
 
+        }
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox3 = checkBox3.Checked;
+            Properties.Settings.Default.Save();
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -355,8 +348,7 @@ namespace hungry_launcher
 
     public class utils
     {
-        private static string assetsversion = "";
-        public static bool debug;
+        static string assetsversion = "";
 
         public static string getjavapath()  // Путь установки java
         {
@@ -428,17 +420,25 @@ namespace hungry_launcher
             {
                 client = new WebClient();
                 checknet = client.OpenRead(jsonurl);
-                checknet.Close();
             }
             catch
             {
                 return null;
-                if (debug == true) MessageBox.Show("Не удалось подключится к серверам для скачивания");
             }
+
+            StreamReader sr = new StreamReader(checknet);
 
             bool fexist = File.Exists(mdir + "\\versions.json");
             if (fexist == false)
                 client.DownloadFile(jsonurl, mdir + "\\versions.json");
+            else
+            {
+                if (sr.ReadToEnd() != File.ReadAllText(mdir + "\\versions.json"))
+                {
+                    File.Delete(mdir + "\\versions.json");
+                    client.DownloadFile(jsonurl, mdir + "\\versions.json");
+                }
+            }
 
             McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
             List<hungry_launcher.utils.Version> allver = versions.versions;
@@ -469,6 +469,7 @@ namespace hungry_launcher
 
         public static void getver(string ver, string mdir)   // Скачать jar и json версии
         {
+            //Дописать проверку если существует - окошко bool fexist = File.Exists(mdir + libr + "\\" + chname);
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
             WebClient jsondown = new WebClient();
@@ -488,8 +489,7 @@ namespace hungry_launcher
             }
             catch
             {
-                if (debug == true)
-                    MessageBox.Show("Cant download " + ver + ".json");
+                MessageBox.Show("Cant download " + ver + ".json");
             }
 
             try
@@ -498,8 +498,7 @@ namespace hungry_launcher
             }
             catch
             {
-                if (debug == true)
-                    MessageBox.Show("Cant download " + ver + ".jar");
+                MessageBox.Show("Cant download " + ver + ".jar");
             }
         }
 
@@ -689,8 +688,7 @@ namespace hungry_launcher
                     }
                     catch
                     {
-                        if (debug == true)
-                            MessageBox.Show("Cant download file " + fname);
+                        MessageBox.Show("Cant download file " + fname);
                     }
                 }
                 if (item.name.Contains("forge"))
@@ -715,8 +713,7 @@ namespace hungry_launcher
                     }
                     catch (Exception ex)
                     {
-                        if (debug == true)
-                            MessageBox.Show(ex.Message);
+                        MessageBox.Show(ex.Message);
                     }
                     if (!cp.Contains(" -Djava.library.path="))
                     {
@@ -872,8 +869,7 @@ namespace hungry_launcher
                     }
                     catch
                     {
-                        if (debug == true)
-                            MessageBox.Show("Cant download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
+                        MessageBox.Show("Cant download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
                     }
                 }
             }
