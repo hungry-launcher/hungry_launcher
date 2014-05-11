@@ -38,7 +38,7 @@ namespace hungry_launcher
             string path;
             mdir = Properties.Settings.Default.mdir;
 
-            if (mdir == null)
+            if (mdir == "")
             {
                 using (var dialog = new FolderBrowserDialog())
                     if (dialog.ShowDialog() == DialogResult.OK)
@@ -49,6 +49,7 @@ namespace hungry_launcher
                     else
                     {
                         path = mdir;
+                        this.Close();
                     }
                 Properties.Settings.Default.mdir = mdir;
             }
@@ -56,6 +57,7 @@ namespace hungry_launcher
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             checkBox3.Checked = Properties.Settings.Default.chBox3;
+            checkBox4.Checked = Properties.Settings.Default.chBox4;
             if (checkBox2.Checked == true)
             {
                 textBox2.Text = Properties.Settings.Default.Textbox2;
@@ -70,8 +72,9 @@ namespace hungry_launcher
                 {
                     comboBox1.Items.Add(i);
                 }
+                if (mver.Contains(Properties.Settings.Default.combobox)) comboBox1.Text = Properties.Settings.Default.combobox;
             }
-            if (mver.Contains(Properties.Settings.Default.combobox)) comboBox1.Text = Properties.Settings.Default.combobox;
+
 
             downver = utils.getversions(mdir);
             if (downver != null)
@@ -249,7 +252,7 @@ namespace hungry_launcher
                 utils.donwlibs(mversion, mdir, true);
                 utils.getassets(mdir);
             }
-
+            comboBox3.Text = null;
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -269,6 +272,17 @@ namespace hungry_launcher
             Properties.Settings.Default.chBox2 = checkBox2.Checked;
             Properties.Settings.Default.Save();
         }
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox3 = checkBox3.Checked;
+            Properties.Settings.Default.Save();
+        }
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox4 = checkBox4.Checked;
+            Properties.Settings.Default.Save();
+            utils.debug = checkBox4.Checked;
+        }
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (checkBox2.Checked == true)
@@ -277,11 +291,6 @@ namespace hungry_launcher
                 Properties.Settings.Default.Save();
             }
 
-        }
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox3 = checkBox3.Checked;
-            Properties.Settings.Default.Save();
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -306,8 +315,8 @@ namespace hungry_launcher
                         comboBox1.Items.Add(i);
                     }
                 }
+                if (mver.Contains(text)) comboBox1.Text = text;
             }
-            if (mver.Contains(text)) comboBox1.Text = text;
             Properties.Settings.Default.combobox = comboBox1.Text;
             Properties.Settings.Default.Save();
         }
@@ -348,7 +357,8 @@ namespace hungry_launcher
 
     public class utils
     {
-        static string assetsversion = "";
+        private static string assetsversion = "";
+        public static bool debug;
 
         public static string getjavapath()  // Путь установки java
         {
@@ -420,25 +430,17 @@ namespace hungry_launcher
             {
                 client = new WebClient();
                 checknet = client.OpenRead(jsonurl);
+                checknet.Close();
             }
             catch
             {
+                if (debug == true) MessageBox.Show("Не удалось подключится к серверам для скачивания");
                 return null;
             }
-
-            StreamReader sr = new StreamReader(checknet);
 
             bool fexist = File.Exists(mdir + "\\versions.json");
             if (fexist == false)
                 client.DownloadFile(jsonurl, mdir + "\\versions.json");
-            else
-            {
-                if (sr.ReadToEnd() != File.ReadAllText(mdir + "\\versions.json"))
-                {
-                    File.Delete(mdir + "\\versions.json");
-                    client.DownloadFile(jsonurl, mdir + "\\versions.json");
-                }
-            }
 
             McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
             List<hungry_launcher.utils.Version> allver = versions.versions;
@@ -469,7 +471,6 @@ namespace hungry_launcher
 
         public static void getver(string ver, string mdir)   // Скачать jar и json версии
         {
-            //Дописать проверку если существует - окошко bool fexist = File.Exists(mdir + libr + "\\" + chname);
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
             WebClient jsondown = new WebClient();
@@ -489,7 +490,8 @@ namespace hungry_launcher
             }
             catch
             {
-                MessageBox.Show("Cant download " + ver + ".json");
+                if (debug == true)
+                    MessageBox.Show("Cant download " + ver + ".json");
             }
 
             try
@@ -498,7 +500,8 @@ namespace hungry_launcher
             }
             catch
             {
-                MessageBox.Show("Cant download " + ver + ".jar");
+                if (debug == true)
+                    MessageBox.Show("Cant download " + ver + ".jar");
             }
         }
 
@@ -688,7 +691,8 @@ namespace hungry_launcher
                     }
                     catch
                     {
-                        MessageBox.Show("Cant download file " + fname);
+                        if (debug == true)
+                            MessageBox.Show("Cant download file " + fname);
                     }
                 }
                 if (item.name.Contains("forge"))
@@ -713,7 +717,8 @@ namespace hungry_launcher
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        if (debug == true)
+                            MessageBox.Show(ex.Message);
                     }
                     if (!cp.Contains(" -Djava.library.path="))
                     {
@@ -857,19 +862,22 @@ namespace hungry_launcher
                         if (fexist == false)
                         {
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                            if (version < 172)
+                                File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
                         }
                         else
                         {
                             File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
                             File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
+                            if (version < 172)
+                                File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
                         }
                     }
                     catch
                     {
-                        MessageBox.Show("Cant download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
+                        if (debug == true)
+                            MessageBox.Show("Cant download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
                     }
                 }
             }
