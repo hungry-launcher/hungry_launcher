@@ -5,18 +5,6 @@ Launcher for minecraft
 
 TO DO LIST:
 
-      Better natives path; [+]
-	  
-	  Auto libraries detection; [+]
-	  
-	  Multithreading[+];
-	  
-	  Disable using non downloaded client[+];
-	  
-	  Add debug mode(all errors shown)[+];
-	  
-	  Fix assets downloading;
-	  
 	  Remember installation path and last version[+];
 	  
 	  Security mode(all files are checked);
