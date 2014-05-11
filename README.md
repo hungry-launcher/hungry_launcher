@@ -4,8 +4,6 @@ hungry_launcher
 Launcher for minecraft
 
 TO DO LIST:
-
-	  Remember installation path and last version[+];
 	  
 	  Security mode(all files are checked);
 
