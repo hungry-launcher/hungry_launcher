@@ -13,7 +13,7 @@ TO DO LIST:
 	  
 	  Disable using non downloaded client[+];
 	  
-	  Split up getting string for launch and donwloading libs;
+	  Add debug mode(all errors shown)[+];
 	  
 	  Fix assets downloading;
 	  
