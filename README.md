@@ -4,20 +4,7 @@ hungry_launcher
 Launcher for minecraft
 
 TO DO LIST:
-
-      Better natives path; [+]
-	  
-	  Auto libraries detection; [+]
-	  
-	  Multithreading[+];
-	  
-	  Disable using non downloaded client[+];
-	  
-	  Split up getting string for launch and donwloading libs;
-	  
 	  Fix assets downloading;
-	  
-	  Remember installation path and last version[+];
 	  
 	  Security mode(all files are checked);
 
@@ -34,7 +21,5 @@ TO DO LIST:
       Licence/pirate mode;
 
       Own site login support; 
-
-      Online and offline mode; 
 	  
       Another? 
