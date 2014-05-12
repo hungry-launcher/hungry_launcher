@@ -5,6 +5,8 @@ Launcher for minecraft
 
 TO DO LIST:
 	  
+	  Manual set JAVA path;
+	  
 	  Security mode(all files are checked);
 
       Tab for settings;
