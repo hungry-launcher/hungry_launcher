@@ -35,31 +35,34 @@ namespace hungry_launcher
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            if (Process.GetProcessesByName("hungry_launcher").Length > 1)
+            Process curr = Process.GetCurrentProcess();
+            Process[] procs = Process.GetProcessesByName(curr.ProcessName);
+            foreach (Process p in procs)
             {
-                MessageBox.Show("Launcher is already runnig");
-                Thread.Sleep(10);
-                this.Close();
+                if ((p.Id != curr.Id) &&
+                    (p.MainModule.FileName == curr.MainModule.FileName))
+                {
+                    MessageBox.Show("Launcher is already runnig");
+                    Thread.Sleep(10);
+                    this.Close();
+                }
             }
 
-
-            string path;
             mdir = Properties.Settings.Default.mdir;
-
             if (mdir == "")
             {
                 using (var dialog = new FolderBrowserDialog())
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        path = dialog.SelectedPath;
-                        mdir = path;
+                        mdir = dialog.SelectedPath;
+                        Properties.Settings.Default.mdir = mdir;
+                        Properties.Settings.Default.Save();
                     }
                     else
                     {
-                        path = mdir;
+                        Thread.Sleep(10);
                         this.Close();
                     }
-                Properties.Settings.Default.mdir = mdir;
             }
 
             checkBox1.Checked = Properties.Settings.Default.chBox;
@@ -208,8 +211,9 @@ namespace hungry_launcher
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
                     path = dialog.SelectedPath;
+                    if (path != mdir)
+                        comboBox1.Text = null;
                     mdir = path;
-                    comboBox1.Text = null;
                 }
                 else
                 {
@@ -845,7 +849,7 @@ namespace hungry_launcher
                             fSHA1 = fSHA1.ToLower();
                         }
                         if (fSHA1 == hash) hashok = true;
-                    }                  
+                    }
                 }
                 else
                 {
