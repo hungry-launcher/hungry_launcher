@@ -97,7 +97,7 @@ namespace hungry_launcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("512")]
         public string Textbox3 {
             get {
                 return ((string)(this["Textbox3"]));

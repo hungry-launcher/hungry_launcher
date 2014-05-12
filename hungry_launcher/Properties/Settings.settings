@@ -21,7 +21,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Textbox3" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">512</Value>
     </Setting>
     <Setting Name="mdir" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

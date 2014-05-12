@@ -166,7 +166,7 @@ namespace hungry_launcher
                             else
                             {
                                 Process minecraft = new Process();
-                                ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
+                                ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
                                 minecraft.StartInfo = mcstart;
                                 minecraft.Start();
                                 int procid = minecraft.Id;
@@ -837,7 +837,7 @@ namespace hungry_launcher
                             fSHA1 = fSHA1.ToLower();
                         }
                         if (fSHA1 == hash) hashok = true;
-                    }
+                    }                  
                 }
                 else
                 {
