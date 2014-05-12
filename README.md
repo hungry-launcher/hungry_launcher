@@ -16,7 +16,17 @@ TO DO LIST:
       Auto upload if something is empty; 
 
       Licence/pirate mode;
+	  
+	  Check empty login;
+	  
+	  Create launcher_profile.json;
+	  
+	  Freeze Versions and Client comboboxes while launching;
+	  
+	  If combobox became empty, change size;
 
       Own site login support; 
+	  
+	  Faster downloading(async method);
 	  
       Another? 
