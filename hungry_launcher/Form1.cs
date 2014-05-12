@@ -35,6 +35,14 @@ namespace hungry_launcher
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            if (Process.GetProcessesByName("hungry_launcher").Length > 1)
+            {
+                MessageBox.Show("Launcher is already runnig");
+                Thread.Sleep(10);
+                this.Close();
+            }
+
+
             string path;
             mdir = Properties.Settings.Default.mdir;
 
