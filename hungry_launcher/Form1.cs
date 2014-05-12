@@ -27,7 +27,7 @@ namespace hungry_launcher
         string alocmem;
         string[] mver;
         utils.Version[] downver;
-        bool console, autoclose, downloading;
+        bool console, autoclose, downloading, licence;
 
         public Form1()
         {
@@ -58,6 +58,8 @@ namespace hungry_launcher
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             checkBox3.Checked = Properties.Settings.Default.chBox3;
             checkBox4.Checked = Properties.Settings.Default.chBox4;
+            checkBox5.Checked = Properties.Settings.Default.chBox5;
+
             if (checkBox2.Checked == true)
             {
                 textBox2.Text = Properties.Settings.Default.Textbox2;
@@ -98,26 +100,26 @@ namespace hungry_launcher
             javahome = utils.getjavapath();
             if (javahome == null)
             {
-                MessageBox.Show("Java не найдена");
+                MessageBox.Show("Cant find JAVA");
             }
             else
             {
                 if (mdir == null)
                 {
-                    MessageBox.Show("Не указана папка с игрой");
+                    MessageBox.Show("Cant find installation path");
                 }
                 else
                 {
                     if (string.IsNullOrEmpty(comboBox1.Text))
                     {
-                        MessageBox.Show("Не выбрана версия клиента");
+                        MessageBox.Show("Verions doesnt set");
                     }
                     else
                     {
                         memory = Convert.ToInt64(textBox3.Text);
                         if (memory < 512)
                         {
-                            MessageBox.Show("Слишком мало памяти");
+                            MessageBox.Show("Not enough memory to launch");
                         }
                         else
                         {
@@ -135,9 +137,11 @@ namespace hungry_launcher
                             launch = launch.Replace("${auth_player_name}", a + username + a);
                             launch = launch.Replace("${version_name}", a + mversion + a);
                             launch = launch.Replace("${game_directory}", a + mdir + a);
-                            //launch = launch.Replace("${game_assets}", a + mdir + "\\assets" + a);
-                            //launch = launch.Replace(" --uuid ${auth_uuid}", "");
-                            //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
+                            if (licence == true)
+                            {
+                                //launch = launch.Replace(" --uuid ${auth_uuid}", "");
+                                //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
+                            }
                             launch = launch.Replace("${user_properties}", "{}");
                             launch = launch.Replace("${user_type}", a + "mojang" + a);
 
@@ -197,6 +201,7 @@ namespace hungry_launcher
                 {
                     path = dialog.SelectedPath;
                     mdir = path;
+                    comboBox1.Text = null;
                 }
                 else
                 {
@@ -205,7 +210,6 @@ namespace hungry_launcher
             }
             Properties.Settings.Default.mdir = mdir;
             Properties.Settings.Default.Save();
-            comboBox1.Text = null;
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -282,6 +286,12 @@ namespace hungry_launcher
             Properties.Settings.Default.chBox4 = checkBox4.Checked;
             Properties.Settings.Default.Save();
             utils.debug = checkBox4.Checked;
+        }
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox5 = checkBox5.Checked;
+            Properties.Settings.Default.Save();
+            licence = checkBox5.Checked;
         }
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
@@ -859,20 +869,15 @@ namespace hungry_launcher
 
                     try
                     {
-                        if (fexist == false)
-                        {
-                            assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            if (version < 172)
-                                File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
-                        }
-                        else
+                        if (fexist == true)
                         {
                             File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
                             File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
-                            assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            if (version < 172)
-                                File.Copy(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1), true);
                         }
+                        if (version < 172)
+                            assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                        else
+                            assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
                     }
                     catch
                     {
@@ -881,6 +886,13 @@ namespace hungry_launcher
                     }
                 }
             }
+
+        }
+        public static string getuuid()
+        {
+            string uuid = "";
+
+            return uuid;
         }
     }
 }
