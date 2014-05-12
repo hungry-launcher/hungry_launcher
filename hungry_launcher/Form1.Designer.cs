@@ -301,9 +301,9 @@
             this.checkBox5.ForeColor = System.Drawing.Color.White;
             this.checkBox5.Location = new System.Drawing.Point(539, 174);
             this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(127, 17);
+            this.checkBox5.Size = new System.Drawing.Size(126, 17);
             this.checkBox5.TabIndex = 22;
-            this.checkBox5.Text = "Licence                     ";
+            this.checkBox5.Text = "License                     ";
             this.checkBox5.UseVisualStyleBackColor = false;
             this.checkBox5.CheckedChanged += new System.EventHandler(this.checkBox5_CheckedChanged);
             // 

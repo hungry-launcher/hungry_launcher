@@ -27,7 +27,7 @@ namespace hungry_launcher
         string alocmem;
         string[] mver;
         utils.Version[] downver;
-        bool console, autoclose, downloading, licence;
+        bool console, autoclose, downloading, license;
 
         public Form1()
         {
@@ -148,7 +148,7 @@ namespace hungry_launcher
                             launch = launch.Replace("${auth_player_name}", a + username + a);
                             launch = launch.Replace("${version_name}", a + mversion + a);
                             launch = launch.Replace("${game_directory}", a + mdir + a);
-                            if (licence == true)
+                            if (license == true)
                             {
                                 //launch = launch.Replace(" --uuid ${auth_uuid}", "");
                                 //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
@@ -166,7 +166,7 @@ namespace hungry_launcher
                                 int procid = minecraft.Id;
                                 if (autoclose == true && checkBox3.Enabled == true)
                                 {
-                                    while (memory < 300000)
+                                    while (memory < 200000)
                                     {
                                         System.Diagnostics.Process pr = Process.GetProcessById(procid);
                                         memory = pr.WorkingSet64 / 1024;
@@ -183,7 +183,7 @@ namespace hungry_launcher
                                 int procid = minecraft.Id;
                                 if (autoclose == true && checkBox3.Enabled == true)
                                 {
-                                    while (memory < 300000)
+                                    while (memory < 200000)
                                     {
                                         System.Diagnostics.Process pr = Process.GetProcessById(procid);
                                         memory = pr.WorkingSet64 / 1024;
@@ -268,7 +268,6 @@ namespace hungry_launcher
                 utils.donwlibs(mversion, mdir, true);
                 utils.getassets(mdir);
             }
-            comboBox3.Text = null;
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -303,7 +302,7 @@ namespace hungry_launcher
         {
             Properties.Settings.Default.chBox5 = checkBox5.Checked;
             Properties.Settings.Default.Save();
-            licence = checkBox5.Checked;
+            license = checkBox5.Checked;
         }
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
@@ -869,22 +868,25 @@ namespace hungry_launcher
 
                 if ((fexist == false) || (fexist == true && hashok == false))
                 {
-                    if (!Directory.Exists(mdir + "\\assets\\vers\\" + names))
+                    if (!Directory.Exists(mdir + "\\assets\\virtual\\legacy\\" + names) & version < 172)
                     {
                         Directory.CreateDirectory(mdir + "\\assets\\virtual\\legacy\\" + names);
                     }
 
-                    if (!Directory.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2)))
+                    else
                     {
-                        Directory.CreateDirectory(mdir + "\\assets\\objects\\" + hash.Substring(0, 2));
+                        if (!Directory.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2)) & version >= 172)
+                            Directory.CreateDirectory(mdir + "\\assets\\objects\\" + hash.Substring(0, 2));
                     }
 
                     try
                     {
                         if (fexist == true)
                         {
-                            File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                            if (version < 172)
+                                File.Delete(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                            else
+                                File.Delete(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
                         }
                         if (version < 172)
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
