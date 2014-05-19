@@ -135,61 +135,68 @@ namespace hungry_launcher
                         }
                         else
                         {
-                            memory = 0;
-                            autoclose = checkBox3.Checked;
-                            console = checkBox1.Checked;
-                            mversion = comboBox1.Text;
-                            alocmem = textBox3.Text + "M";
-                            string username = textBox1.Text;
-                            char a = '"';
-                            string memorys = " -Xms512M -Xmx{0}";
-                            memorys = string.Format(memorys, alocmem);
-                            string launch = utils.donwlibs(mversion, mdir, false, 0);
-
-                            launch = launch.Replace("${auth_player_name}", a + username + a);
-                            launch = launch.Replace("${version_name}", a + mversion + a);
-                            launch = launch.Replace("${game_directory}", a + mdir + a);
-                            if (license == true)
+                            if (string.IsNullOrWhiteSpace(textBox1.Text) == true || textBox1.Text.Contains(" "))
                             {
-                                //launch = launch.Replace(" --uuid ${auth_uuid}", "");
-                                //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
-                            }
-                            launch = launch.Replace("${user_properties}", "{}");
-                            launch = launch.Replace("${user_type}", a + "mojang" + a);
-
-                            launch = memorys + launch;
-                            if (console == true)
-                            {
-                                Process minecraft = new Process();
-                                ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
-                                minecraft.StartInfo = mcstart;
-                                minecraft.Start();
-                                int procid = minecraft.Id;
-                                if (autoclose == true && checkBox3.Enabled == true)
-                                {
-                                    while (memory < 200000)
-                                    {
-                                        System.Diagnostics.Process pr = Process.GetProcessById(procid);
-                                        memory = pr.WorkingSet64 / 1024;
-                                    }
-                                    this.Close();
-                                }
+                                MessageBox.Show("Your username shouldnt be empty or contain spaces");
                             }
                             else
                             {
-                                Process minecraft = new Process();
-                                ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
-                                minecraft.StartInfo = mcstart;
-                                minecraft.Start();
-                                int procid = minecraft.Id;
-                                if (autoclose == true && checkBox3.Enabled == true)
+                                memory = 0;
+                                autoclose = checkBox3.Checked;
+                                console = checkBox1.Checked;
+                                mversion = comboBox1.Text;
+                                alocmem = textBox3.Text + "M";
+                                string username = textBox1.Text;
+                                char a = '"';
+                                string memorys = " -Xms512M -Xmx{0}";
+                                memorys = string.Format(memorys, alocmem);
+                                string launch = utils.donwlibs(mversion, mdir, false, 0);
+
+                                launch = launch.Replace("${auth_player_name}", a + username + a);
+                                launch = launch.Replace("${version_name}", a + mversion + a);
+                                launch = launch.Replace("${game_directory}", a + mdir + a);
+                                if (license == true)
                                 {
-                                    while (memory < 200000)
+                                    //launch = launch.Replace(" --uuid ${auth_uuid}", "");
+                                    //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
+                                }
+                                launch = launch.Replace("${user_properties}", "{}");
+                                launch = launch.Replace("${user_type}", a + "mojang" + a);
+
+                                launch = memorys + launch;
+                                if (console == true)
+                                {
+                                    Process minecraft = new Process();
+                                    ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
+                                    minecraft.StartInfo = mcstart;
+                                    minecraft.Start();
+                                    int procid = minecraft.Id;
+                                    if (autoclose == true && checkBox3.Enabled == true)
                                     {
-                                        System.Diagnostics.Process pr = Process.GetProcessById(procid);
-                                        memory = pr.WorkingSet64 / 1024;
+                                        while (memory < 200000)
+                                        {
+                                            System.Diagnostics.Process pr = Process.GetProcessById(procid);
+                                            memory = pr.WorkingSet64 / 1024;
+                                        }
+                                        this.Close();
                                     }
-                                    this.Close();
+                                }
+                                else
+                                {
+                                    Process minecraft = new Process();
+                                    ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
+                                    minecraft.StartInfo = mcstart;
+                                    minecraft.Start();
+                                    int procid = minecraft.Id;
+                                    if (autoclose == true && checkBox3.Enabled == true)
+                                    {
+                                        while (memory < 200000)
+                                        {
+                                            System.Diagnostics.Process pr = Process.GetProcessById(procid);
+                                            memory = pr.WorkingSet64 / 1024;
+                                        }
+                                        this.Close();
+                                    }
                                 }
                             }
                         }
@@ -1021,10 +1028,21 @@ namespace hungry_launcher
             }
 
             WebClient client = new WebClient();
-            Stream streams = client.OpenRead(verjson);
-            StreamReader reader = new StreamReader(streams);
-            String content = reader.ReadToEnd();
-            streams.Close();
+            StreamReader reader;
+            String content = "";
+
+            try
+            {
+                Stream streams = client.OpenRead(verjson);
+                reader = new StreamReader(streams);
+                content = reader.ReadToEnd();
+                streams.Close();
+            }
+            catch
+            {
+                if (debug == true)
+                    MessageBox.Show("Cant get sizes of libraries");
+            }
 
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(content);
 
