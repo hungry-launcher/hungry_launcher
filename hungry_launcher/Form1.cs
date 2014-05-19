@@ -234,6 +234,7 @@ namespace hungry_launcher
                 downloading = true;
 
                 if (comboBox1.Text == comboBox3.Text) comboBox1.Text = null;
+                button2.Enabled = false;
 
                 backgroundWorker1.RunWorkerAsync();
             }
@@ -275,6 +276,7 @@ namespace hungry_launcher
             this.button3.Enabled = true;
             this.comboBox3.Enabled = true;
             comboBox3.Invoke(new MethodInvoker(delegate() { comboBox3.Text = ""; }));
+            button2.Invoke(new MethodInvoker(delegate() { button2.Enabled = true; }));
             this.checkBox3.Enabled = true;
             this.downloading = false;
         }

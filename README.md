@@ -13,7 +13,9 @@ TO DO LIST:
 
       Multi clients support;
       
-      Using progress bar;
+	  Another invoking in backgroundworker thread;
+	  
+      Using progress bar[?];
 
       Auto upload if something is empty; 
 
