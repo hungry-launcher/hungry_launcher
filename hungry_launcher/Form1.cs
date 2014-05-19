@@ -260,6 +260,7 @@ namespace hungry_launcher
             }
 
             mversion = combo3text;
+
             if (mversion != null)
             {
                 long fsize = utils.getsize(mversion, mdir);
@@ -270,9 +271,10 @@ namespace hungry_launcher
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            progressBar1.Invoke(new MethodInvoker(delegate() { progressBar1.Value = 0; }));
             this.button3.Enabled = true;
             this.comboBox3.Enabled = true;
-            this.comboBox3.Text = string.Empty;
+            comboBox3.Invoke(new MethodInvoker(delegate() { comboBox3.Text = ""; }));
             this.checkBox3.Enabled = true;
             this.downloading = false;
         }
@@ -372,15 +374,10 @@ namespace hungry_launcher
         public static double temp;
         public delegate void progres(double prog);
 
-        public double Bar
-        {
-            get { return progressBar1.Value; }
-            set { progressBar1.Value = 100; }
-        }
         public void SetProgress(double value)
         {
-            temp = temp + value;        
-            Bar = temp;
+            temp = temp + value;
+            progressBar1.Invoke(new MethodInvoker(delegate() { progressBar1.Value = Convert.ToInt32(temp); }));
         }
 
     }
