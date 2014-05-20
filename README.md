@@ -13,7 +13,7 @@ TO DO LIST:
 
       Multi clients support;
       
-	  Another invoking in backgroundworker thread;
+	  Small comboboxes list if empty;
 	  
       Using progress bar[?];
 
