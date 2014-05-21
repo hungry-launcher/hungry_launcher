@@ -16,6 +16,8 @@ TO DO LIST:
 	  Small comboboxes list if empty;
 	  
       Smooth animation;
+	  
+	  Optimize variables!!!;
 
       Auto upload if something is empty; 
 
