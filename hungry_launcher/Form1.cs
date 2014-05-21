@@ -292,7 +292,7 @@ namespace hungry_launcher
             buffer = 0;
             fsize = 0;
             progressBar1.Invoke(new MethodInvoker(delegate() { progressBar1.Value = Convert.ToInt32(0); }));
-            comboBox3.Invoke(new MethodInvoker(delegate() { comboBox3.Text = ""; }));
+            comboBox3.Invoke(new MethodInvoker(delegate() { comboBox3.Text = null; }));
             button2.Invoke(new MethodInvoker(delegate() { button2.Enabled = true; }));
             this.checkBox3.Enabled = true;
             this.downloading = false;
@@ -332,7 +332,6 @@ namespace hungry_launcher
                 Properties.Settings.Default.Textbox2 = textBox2.Text;
                 Properties.Settings.Default.Save();
             }
-
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -346,6 +345,7 @@ namespace hungry_launcher
             comboBox1.Items.Clear();
             if (mver != null)
             {
+                if (mver.Length == 0) comboBox1.Items.Add("");
                 foreach (Object i in mver)
                 {
                     if (downloading == true && i.ToString() == comboBox3.Text)
@@ -383,6 +383,7 @@ namespace hungry_launcher
             comboBox3.Items.Clear();
             if (downver != null)
             {
+                if (downver.Length == 0) comboBox3.Items.Add("");
                 foreach (var item in downver)
                 {
                     comboBox3.Items.Add(item.id);

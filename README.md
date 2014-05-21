@@ -11,13 +11,9 @@ TO DO LIST:
 
       Tab for settings;
 
-      Multi clients support;
-      
-	  Small comboboxes list if empty;
+      Multi clients support; 
 	  
-      Smooth animation;
-	  
-	  Optimize variables!!!;
+      Smooth animation;	  
 
       Auto upload if something is empty; 
 
