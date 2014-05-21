@@ -28,6 +28,7 @@ namespace hungry_launcher
         string[] mver;
         Form1.Version[] downver;
         bool console, autoclose, downloading, license;
+        public static long fsize;
         public Form1()
         {
             InitializeComponent();
@@ -64,6 +65,10 @@ namespace hungry_launcher
                         this.Close();
                     }
             }
+
+            bool fexist = Directory.Exists(mdir);
+            if (fexist == false)
+                Directory.CreateDirectory(mdir);
 
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
@@ -149,7 +154,7 @@ namespace hungry_launcher
                                 char a = '"';
                                 string memorys = " -Xms512M -Xmx{0}";
                                 memorys = string.Format(memorys, alocmem);
-                                string launch = donwlibs(mversion, mdir, false, 0);
+                                string launch = donwlibs(mversion, mdir, false);
 
                                 launch = launch.Replace("${auth_player_name}", a + username + a);
                                 launch = launch.Replace("${version_name}", a + mversion + a);
@@ -270,10 +275,10 @@ namespace hungry_launcher
 
             if (mversion != null)
             {
-                long fsize = getsize(mversion, mdir);
-                getver(mversion, mdir, fsize);
-                donwlibs(mversion, mdir, true, fsize);
-                getassets(mdir, fsize);
+                fsize = getsize(mversion, mdir);
+                getver(mversion, mdir);
+                donwlibs(mversion, mdir, true);
+                getassets(mdir);
             }
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -282,6 +287,7 @@ namespace hungry_launcher
             this.button3.Enabled = true;
             this.comboBox3.Enabled = true;
             buffer = 0;
+            fsize=0;
             progressBar1.Invoke(new MethodInvoker(delegate() { progressBar1.Value = Convert.ToInt32(0); }));
             comboBox3.Invoke(new MethodInvoker(delegate() { comboBox3.Text = ""; }));
             button2.Invoke(new MethodInvoker(delegate() { button2.Enabled = true; }));
@@ -385,11 +391,12 @@ namespace hungry_launcher
         public void SetProgress(double value)
         {
             buffer = buffer + value;
+            double percent = 100 - (100 * (fsize - buffer) / fsize);
             if (progressBar1.InvokeRequired)
             {
                 progressBar1.Invoke(new MethodInvoker(delegate()
                 {
-                    progressBar1.Value = Convert.ToInt32(buffer);
+                    progressBar1.Value = Convert.ToInt32(percent);
                 }));
             }
             else 
@@ -515,7 +522,7 @@ namespace hungry_launcher
             public List<Version> versions { get; set; }
         }
 
-        public void getver(string ver, string mdir, long fsize)   // Скачать jar и json версии
+        public void getver(string ver, string mdir)   // Скачать jar и json версии
         {
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
@@ -534,9 +541,7 @@ namespace hungry_launcher
             {
                 jsondown.DownloadFile(verjson, ver + ".json");
                 FileInfo f = new FileInfo(ver + ".json");
-                double temp = f.Length * 100;
-                temp /= fsize;
-                SetProgress(temp);         
+                SetProgress(f.Length);  
             }
             catch
             {
@@ -548,7 +553,7 @@ namespace hungry_launcher
             {
                 verdown.DownloadFile(verget, ver + ".jar");
                 FileInfo f = new FileInfo(ver + ".jar");
-
+                SetProgress(f.Length);  
             }
             catch
             {
@@ -594,7 +599,7 @@ namespace hungry_launcher
             public List<Library> libraries { get; set; }
         }
 
-        public string donwlibs(string vers, string mdir, bool redownload, long fsize)  // Скачать библиотеки
+        public string donwlibs(string vers, string mdir, bool redownload)  // Скачать библиотеки
         {
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
             string cp = "";
@@ -714,9 +719,7 @@ namespace hungry_launcher
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
                             FileInfo f = new FileInfo(mdir + libr + "\\" + Path.GetFileName(getlib));
-                            double temp = f.Length * 100;
-                            temp /= fsize;
-                            SetProgress(temp);
+                            SetProgress(f.Length);  
                         }
                         else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
                         {
@@ -726,9 +729,7 @@ namespace hungry_launcher
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
                             FileInfo f = new FileInfo(mdir + libr + "\\" + Path.GetFileName(getlib));
-                            double temp = f.Length * 100;
-                            temp /= fsize;
-                            SetProgress(temp);
+                            SetProgress(f.Length);  
                         }
                         else if (item.url != null)
                         {
@@ -746,9 +747,7 @@ namespace hungry_launcher
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
                             FileInfo f = new FileInfo(mdir + libr + "\\" + Path.GetFileName(getlib));
-                            double temp = f.Length * 100;
-                            temp /= fsize;
-                            SetProgress(temp);
+                            SetProgress(f.Length);  
 
                             if (item.name.Contains("forge"))
                             {
@@ -822,7 +821,7 @@ namespace hungry_launcher
             public int size { get; set; }
         }
 
-        public void getassets(string mdir, long fsize)    // Скачать звуки и тд.
+        public void getassets(string mdir)    // Скачать звуки и тд.
         {
             if (assetsversion == "old")
             {
@@ -848,9 +847,7 @@ namespace hungry_launcher
                 assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\virtual\\legacy\\indexes\\" + "legacy.json"));
 
                 FileInfo f = new FileInfo(mdir + "\\assets\\virtual\\legacy\\indexes\\" + format);
-                double temp = f.Length * 100;
-                temp /= fsize;
-                SetProgress(temp);
+                SetProgress(f.Length);  
             }
             else
             {
@@ -864,9 +861,7 @@ namespace hungry_launcher
                 assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\indexes\\" + format));
 
                 FileInfo f = new FileInfo(mdir + "\\assets\\indexes\\" + format);
-                double temp = f.Length * 100;
-                temp /= fsize;
-                SetProgress(temp);
+                SetProgress(f.Length);  
             }
 
             foreach (KeyValuePair<string, Objects> i in assets.objects)
@@ -949,18 +944,14 @@ namespace hungry_launcher
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
 
                             FileInfo f = new FileInfo(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
-                            double temp = f.Length * 100;
-                            temp /= fsize;
-                            SetProgress(temp);
+                            SetProgress(f.Length);  
                         }
                         else
                         {
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
 
                             FileInfo f = new FileInfo(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            double temp = f.Length * 100;
-                            temp /= fsize;
-                            SetProgress(temp);
+                            SetProgress(f.Length);  
                         }
                     }
                     catch

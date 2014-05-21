@@ -15,7 +15,7 @@ TO DO LIST:
       
 	  Small comboboxes list if empty;
 	  
-      Using progress bar[?];
+      Smooth animation;
 
       Auto upload if something is empty; 
 
