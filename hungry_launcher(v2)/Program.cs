@@ -23,7 +23,7 @@ namespace hungry_launcher_v2_
 
         static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("hungry_launcher(v2).Newtonsoft.Json.dll"))
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("hungry_launcher_v2_.Newtonsoft.Json.dll"))
             {
                 byte[] AssemblyData = new byte[stream.Length];
                 stream.Read(AssemblyData, 0, AssemblyData.Length);

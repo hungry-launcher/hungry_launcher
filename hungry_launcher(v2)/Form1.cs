@@ -75,7 +75,6 @@ namespace hungry_launcher_v2_
             if (fexist == false)
                 Directory.CreateDirectory(mdir);
 
-
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
             checkBox3.Checked = Properties.Settings.Default.chBox3;
@@ -90,6 +89,7 @@ namespace hungry_launcher_v2_
             textBox3.Text = Properties.Settings.Default.Textbox3;
 
             mver = ut.installedver(mdir);
+
             if (mver != null)
             {
                 foreach (Object i in mver)
@@ -100,6 +100,7 @@ namespace hungry_launcher_v2_
             }
 
             downver = ut.getverlist(mdir);
+
             if (downver != null)
             {
                 foreach (var item in downver)
@@ -526,7 +527,7 @@ namespace hungry_launcher_v2_
             else return null;
         }
 
-        public hungry_launcher_v2_.utils.Version[] getverlist(string mdir)   //Получить список версий из интернета 
+        public Version[] getverlist(string mdir)   //Получить список версий из интернета 
         {
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
 
@@ -549,9 +550,10 @@ namespace hungry_launcher_v2_
             if (fexist == false)
                 client.DownloadFile(jsonurl, mdir + "\\versions.json");
 
-            McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
-            List<hungry_launcher_v2_.utils.Version> allver = versions.versions;
-            List<hungry_launcher_v2_.utils.Version> release = new List<hungry_launcher_v2_.utils.Version>();
+
+            McVersion mcversions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
+            List<Version> allver = mcversions.versions;
+            List<Version> release = new List<Version>();
 
             foreach (var item in allver)
             {
@@ -560,6 +562,7 @@ namespace hungry_launcher_v2_
                     release.Add(item);
                 }
             }
+
             release.Reverse();
             return release.ToArray();
         }
