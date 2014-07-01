@@ -7,25 +7,19 @@ TO DO LIST:
 	  
 	  Manual set JAVA path;
 	  
-	  Security mode(all files are checked);
+	  Security mode(all files are checked, make hash check);
 
-      Tab for settings;
+      Form for settings;
 
       Multi clients support; 
-	  
-      Smooth animation;	  
-
-      Auto upload if something is empty; 
 
       Licence/pirate mode;
 	  
-	  Check empty login;
+	  Smooth bar animation;
 	  
 	  Create launcher_profile.json;
 	  
 	  Freeze Versions and Client comboboxes while launching;
-	  
-	  If combobox became empty, change size;
 
       Own site login support; 
 	  

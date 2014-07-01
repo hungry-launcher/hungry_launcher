@@ -17,24 +17,25 @@ using System.Threading;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 
-
-namespace hungry_launcher
+namespace hungry_launcher_v2_
 {
     public partial class Form1 : Form
     {
-        string mdir;
-        string mversion;
-        string alocmem;
-        string[] mver;
-        utils.Version[] downver;
-        bool console, autoclose, downloading, license;
-        public static long fsize;
+        utils ut = new utils();
+        private static double buffer;
+        private string mdir;
+        private string mversion;
+        private string alocmem;
+        private string[] mver;
+        private utils.Version[] downver;
+        private bool console, autoclose, downloading, license;
+        private static long fsize;
+ 
+
         public Form1()
         {
             InitializeComponent();
         }
-
-        utils ut = new utils();
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -51,6 +52,7 @@ namespace hungry_launcher
                 }
             }
 
+            ut.setform(this);
 
             mdir = Properties.Settings.Default.mdir;
             if (mdir == "")
@@ -65,7 +67,7 @@ namespace hungry_launcher
                     else
                     {
                         Thread.Sleep(10);
-                        this.Close();
+                        Application.Exit();
                     }
             }
 
@@ -86,7 +88,7 @@ namespace hungry_launcher
             textBox1.Text = Properties.Settings.Default.Textbox;
             textBox3.Text = Properties.Settings.Default.Textbox3;
 
-            mver = ut.mineversions(mdir);
+            mver = ut.installedver(mdir);
             if (mver != null)
             {
                 foreach (Object i in mver)
@@ -96,7 +98,7 @@ namespace hungry_launcher
                 if (mver.Contains(Properties.Settings.Default.combobox)) comboBox1.Text = Properties.Settings.Default.combobox;
             }
 
-            downver = ut.getversions(mdir);
+            downver = ut.getverlist(mdir);
             if (downver != null)
             {
                 foreach (var item in downver)
@@ -109,7 +111,121 @@ namespace hungry_launcher
                 button3.Enabled = false;
                 comboBox3.Enabled = false;
             }
+        }
 
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.combobox = comboBox1.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void comboBox1_DropDown(object sender, EventArgs e)
+        {
+            string text = comboBox1.Text;
+            mver = ut.installedver(mdir);
+            comboBox1.Items.Clear();
+            if (mver != null)
+            {
+                if (mver.Length == 0) comboBox1.Items.Add("");
+                foreach (Object i in mver)
+                {
+                    if (downloading == true && i.ToString() == comboBox3.Text)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        comboBox1.Items.Add(i);
+                    }
+                }
+                if (mver.Contains(text)) comboBox1.Text = text;
+            }
+            Properties.Settings.Default.combobox = comboBox1.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox3_DropDown(object sender, EventArgs e)
+        {
+            comboBox3.Items.Clear();
+            if (downver != null)
+            {
+                if (downver.Length == 0) comboBox3.Items.Add("");
+                foreach (var item in downver)
+                {
+                    comboBox3.Items.Add(item.id);
+                }
+            }
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Textbox = textBox1.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == true)
+            {
+                Properties.Settings.Default.Textbox2 = textBox2.Text;
+                Properties.Settings.Default.Save();
+            }
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Textbox3 = textBox3.Text;
+            Properties.Settings.Default.Save();
+        }
+
+        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!Char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox = checkBox1.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox2 = checkBox2.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox3 = checkBox3.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox4 = checkBox4.Checked;
+            Properties.Settings.Default.Save();
+            utils.debug = checkBox4.Checked;
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox5 = checkBox5.Checked;
+            Properties.Settings.Default.Save();
+            license = checkBox5.Checked;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -119,23 +235,31 @@ namespace hungry_launcher
             javahome = ut.getjavapath();
             if (javahome == null)
             {
-                MessageBox.Show("Cant find JAVA");
+                MessageBox.Show("Can't find JAVA");
             }
             else
             {
                 if (mdir == null)
                 {
-                    MessageBox.Show("Cant find installation path");
+                    MessageBox.Show("Can't find installation path");
                 }
                 else
                 {
                     if (string.IsNullOrEmpty(comboBox1.Text))
                     {
-                        MessageBox.Show("Verions doesnt set");
+                        MessageBox.Show("Verion doesn't set");
                     }
                     else
                     {
-                        memory = Convert.ToInt64(textBox3.Text);
+                        try
+                        {
+                            memory = Convert.ToInt64(textBox3.Text);
+                        }
+                        catch
+                        {
+                            memory = 0;
+                        }
+
                         if (memory < 512)
                         {
                             MessageBox.Show("Not enough memory to launch");
@@ -144,7 +268,7 @@ namespace hungry_launcher
                         {
                             if (string.IsNullOrWhiteSpace(textBox1.Text) == true || textBox1.Text.Contains(" "))
                             {
-                                MessageBox.Show("Your username shouldnt be empty or contain spaces");
+                                MessageBox.Show("Your username shouldn't be empty or contain spaces");
                             }
                             else
                             {
@@ -157,7 +281,7 @@ namespace hungry_launcher
                                 char a = '"';
                                 string memorys = " -Xms512M -Xmx{0}";
                                 memorys = string.Format(memorys, alocmem);
-                                string launch = ut.donwlibs(mversion, mdir, false);
+                                string launch = ut.extractlibs(mversion, mdir);
 
                                 launch = launch.Replace("${auth_player_name}", a + username + a);
                                 launch = launch.Replace("${version_name}", a + mversion + a);
@@ -211,11 +335,7 @@ namespace hungry_launcher
                 }
             }
         }
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.Textbox = textBox1.Text;
-            Properties.Settings.Default.Save();
-        }
+
         private void button2_Click(object sender, EventArgs e)
         {
             string path;
@@ -238,6 +358,7 @@ namespace hungry_launcher
             Properties.Settings.Default.mdir = mdir;
             Properties.Settings.Default.Save();
         }
+
         private void button3_Click(object sender, EventArgs e)
         {
             if (comboBox3.Text != "")
@@ -253,6 +374,7 @@ namespace hungry_launcher
                 backgroundWorker1.RunWorkerAsync();
             }
         }
+
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             string combo3text = "";
@@ -279,14 +401,13 @@ namespace hungry_launcher
             if (mversion != null)
             {
                 fsize = ut.getsize(mversion, mdir);
-                ut.getver(mversion, mdir);
-                ut.donwlibs(mversion, mdir, true);
+                ut.downloadver(mversion, mdir);
+                ut.donwlibs(mversion, mdir);
                 ut.getassets(mdir);
             }
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-
             this.button3.Enabled = true;
             this.comboBox3.Enabled = true;
             buffer = 0;
@@ -297,104 +418,7 @@ namespace hungry_launcher
             this.checkBox3.Enabled = true;
             this.downloading = false;
         }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox = checkBox1.Checked;
-            Properties.Settings.Default.Save();
-        }
-        private void checkBox2_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox2 = checkBox2.Checked;
-            Properties.Settings.Default.Save();
-        }
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox3 = checkBox3.Checked;
-            Properties.Settings.Default.Save();
-        }
-        private void checkBox4_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox4 = checkBox4.Checked;
-            Properties.Settings.Default.Save();
-            utils.debug = checkBox4.Checked;
-        }
-        private void checkBox5_CheckedChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.chBox5 = checkBox5.Checked;
-            Properties.Settings.Default.Save();
-            license = checkBox5.Checked;
-        }
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-            if (checkBox2.Checked == true)
-            {
-                Properties.Settings.Default.Textbox2 = textBox2.Text;
-                Properties.Settings.Default.Save();
-            }
-        }
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.combobox = comboBox1.Text;
-            Properties.Settings.Default.Save();
-        }
-        private void comboBox1_Dropdown(object sender, System.EventArgs e)
-        {
-            string text = comboBox1.Text;
-            mver = ut.mineversions(mdir);
-            comboBox1.Items.Clear();
-            if (mver != null)
-            {
-                if (mver.Length == 0) comboBox1.Items.Add("");
-                foreach (Object i in mver)
-                {
-                    if (downloading == true && i.ToString() == comboBox3.Text)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        comboBox1.Items.Add(i);
-                    }
-                }
-                if (mver.Contains(text)) comboBox1.Text = text;
-            }
-            Properties.Settings.Default.combobox = comboBox1.Text;
-            Properties.Settings.Default.Save();
-        }
-
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
-        private void textBox3_TextChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default.Textbox3 = textBox3.Text;
-            Properties.Settings.Default.Save();
-        }
-        private void textBox3_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!Char.IsDigit(e.KeyChar) && e.KeyChar != Convert.ToChar(8))
-            {
-                e.Handled = true;
-            }
-        }
-        private void comboBox3_Dropdown(object sender, System.EventArgs e)
-        {
-            comboBox3.Items.Clear();
-            if (downver != null)
-            {
-                if (downver.Length == 0) comboBox3.Items.Add("");
-                foreach (var item in downver)
-                {
-                    comboBox3.Items.Add(item.id);
-                }
-            }
-        }
-
-        private static double buffer;
-
-
-        public static void SetProgress(double value)
+        public void SetProgress(double value)
         {
             buffer = buffer + value;
             double percent = 100 - (100 * (fsize - buffer) / fsize);
@@ -410,16 +434,34 @@ namespace hungry_launcher
                 progressBar1.Value = Convert.ToInt32(buffer);
             }
         }
+
+        public static void progress(double value,Form1 oForm1)       
+        {
+            oForm1.SetProgress(value);
+        }
     }
+
+
 
     /// <summary>
     ///                             UTILITS CLASS
     /// </summary>
+    /// 
+
 
     public class utils
     {
+
+        private Form1 oForm1;
+
         private static string assetsversion = "";
         public static bool debug;
+
+
+        public void setform(Form1 form1)
+        {
+            oForm1=form1;
+        }
 
         public string getjavapath()  // Путь установки java
         {
@@ -456,7 +498,8 @@ namespace hungry_launcher
             }
             return javapath;
         }
-        public string[] mineversions(string mdir)  // Список установленных версий
+
+        public string[] installedver(string mdir)  // Список установленных версий
         {
             string versions = "{0}\\versions\\";
             versions = string.Format(versions, mdir);
@@ -480,7 +523,7 @@ namespace hungry_launcher
             else return null;
         }
 
-        public hungry_launcher.utils.Version[] getversions(string mdir)   //Получить список версий из интернета 
+        public hungry_launcher_v2_.utils.Version[] getverlist(string mdir)   //Получить список версий из интернета 
         {
             string jsonurl = "http://s3.amazonaws.com/Minecraft.Download/versions/versions.json";
 
@@ -495,7 +538,7 @@ namespace hungry_launcher
             }
             catch
             {
-                if (debug == true) MessageBox.Show("Не удалось подключится к серверам для скачивания");
+                if (debug == true) MessageBox.Show("Can't get versions list");
                 return null;
             }
 
@@ -504,8 +547,8 @@ namespace hungry_launcher
                 client.DownloadFile(jsonurl, mdir + "\\versions.json");
 
             McVersion versions = JsonConvert.DeserializeObject<McVersion>(File.ReadAllText(mdir + "\\versions.json"));
-            List<hungry_launcher.utils.Version> allver = versions.versions;
-            List<hungry_launcher.utils.Version> release = new List<hungry_launcher.utils.Version>();
+            List<hungry_launcher_v2_.utils.Version> allver = versions.versions;
+            List<hungry_launcher_v2_.utils.Version> release = new List<hungry_launcher_v2_.utils.Version>();
 
             foreach (var item in allver)
             {
@@ -514,6 +557,7 @@ namespace hungry_launcher
                     release.Add(item);
                 }
             }
+            release.Reverse();
             return release.ToArray();
         }
 
@@ -530,14 +574,13 @@ namespace hungry_launcher
             public List<Version> versions { get; set; }
         }
 
-        public void getver(string ver, string mdir)   // Скачать jar и json версии
+        public void downloadver(string ver, string mdir)   // Скачать jar и json версии
         {
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
             WebClient jsondown = new WebClient();
             WebClient verdown = new WebClient();
             System.IO.Directory.CreateDirectory(mdir + "\\versions\\" + ver);
-            Directory.SetCurrentDirectory(mdir + "\\versions\\" + ver);
             bool fexist = File.Exists(mdir + "\\versions\\" + ver);
             if (fexist == true)
             {
@@ -547,26 +590,26 @@ namespace hungry_launcher
 
             try
             {
-                jsondown.DownloadFile(verjson, ver + ".json");
-                FileInfo f = new FileInfo(ver + ".json");
-                Form1.SetProgress(f.Length);
+                jsondown.DownloadFile(verjson, mdir + "\\versions\\" + ver+"\\"+ver + ".json");
+                FileInfo f = new FileInfo(mdir + "\\versions\\" + ver + "\\" + ver + ".json");
+                Form1.progress(f.Length,oForm1);
             }
             catch
             {
                 if (debug == true)
-                    MessageBox.Show("Cant download " + ver + ".json");
+                    MessageBox.Show("Can't download " + ver + ".json");
             }
 
             try
             {
-                verdown.DownloadFile(verget, ver + ".jar");
-                FileInfo f = new FileInfo(ver + ".jar");
-                Form1.SetProgress(f.Length);
+                verdown.DownloadFile(verget, mdir + "\\versions\\" + ver + "\\" + ver + ".jar");
+                FileInfo f = new FileInfo(mdir + "\\versions\\" + ver + "\\" + ver + ".jar");
+                Form1.progress(f.Length, oForm1);
             }
             catch
             {
                 if (debug == true)
-                    MessageBox.Show("Cant download " + ver + ".jar");
+                    MessageBox.Show("Can't download " + ver + ".jar");
             }
         }
 
@@ -607,10 +650,9 @@ namespace hungry_launcher
             public List<Library> libraries { get; set; }
         }
 
-        public string donwlibs(string vers, string mdir, bool redownload)  // Скачать библиотеки
+        public void donwlibs(string vers, string mdir)  // Скачать библиотеки
         {
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
-            string cp = "";
             mdir = mdir + "\\libraries\\";
 
             if (Directory.Exists(mdir + "natives"))
@@ -715,7 +757,7 @@ namespace hungry_launcher
                 url = url.Replace("\\", "/");
                 bool fexist = File.Exists(mdir + libr + "\\" + chname);
 
-                if (fexist == false || redownload == true)
+                if (fexist == false)
                 {
                     try
                     {
@@ -727,7 +769,7 @@ namespace hungry_launcher
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
                             FileInfo f = new FileInfo(mdir + libr + "\\" + Path.GetFileName(getlib));
-                            Form1.SetProgress(f.Length);
+                            Form1.progress(f.Length, oForm1);
                         }
                         else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
                         {
@@ -737,7 +779,7 @@ namespace hungry_launcher
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
                             FileInfo f = new FileInfo(mdir + libr + "\\" + Path.GetFileName(getlib));
-                            Form1.SetProgress(f.Length);
+                            Form1.progress(f.Length, oForm1);
                         }
                         else if (item.url != null)
                         {
@@ -755,7 +797,7 @@ namespace hungry_launcher
                             libdown.DownloadFile(getlib, mdir + libr + "\\" + Path.GetFileName(getlib));
 
                             FileInfo f = new FileInfo(mdir + libr + "\\" + Path.GetFileName(getlib));
-                            Form1.SetProgress(f.Length);
+                            Form1.progress(f.Length, oForm1);
 
                             if (item.name.Contains("forge"))
                             {
@@ -769,6 +811,108 @@ namespace hungry_launcher
                             MessageBox.Show("Cant download file " + fname);
                     }
                 }
+            }
+        }
+
+        public string extractlibs(string vers, string mdir)  // Извлечть и получить путь библиотек
+        {
+            Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
+            string cp = "";
+            mdir = mdir + "\\libraries\\";
+
+            if (Directory.Exists(mdir + "natives"))
+            {
+                Directory.Delete(mdir + "natives", true);
+            }
+            else
+            {
+                Directory.CreateDirectory(mdir + "natives");
+            }
+
+            foreach (var item in libs.libraries)
+            {
+                bool osx = false;
+                if (item.rules != null)
+                {
+                    foreach (var rul in item.rules)
+                    {
+                        if ((rul.action != null) && (rul.action == "allow"))
+                        {
+                            if ((rul.os != null) && (rul.os.name == "osx"))
+                            {
+                                osx = true;
+                            }
+
+                        }
+                    }
+                }
+                if (osx == true)
+                {
+                    continue;
+                }
+
+                string libr = "";
+                string fname = "";
+                string forge = "";
+                int j = 0;
+
+                for (int i = 0; i < item.name.Length; i++)
+                {
+                    if (item.name[i] == ':')
+                    {
+                        libr = libr + "\\";
+                        i++;
+                        j = i;
+                        break;
+                    }
+                    if (item.name[i] == '.')
+                    {
+                        libr = libr + "\\";
+                    }
+                    else
+                    {
+                        libr = libr + item.name[i];
+                    }
+                }
+
+                for (int k = j; k < item.name.Length; k++)
+                {
+                    if (item.name[k] == ':')
+                    {
+                        fname = fname + "-";
+                        libr = libr + "\\";
+                    }
+                    else
+                    {
+                        fname = fname + item.name[k];
+                        libr = libr + item.name[k];
+                    }
+                }
+
+                if ((item.natives != null) && (item.natives.windows != null))
+                {
+                    fname = fname + "-natives-windows";
+                    if (item.natives.windows.Contains("${arch}"))
+                    {
+                        bool is64bit = System.Environment.Is64BitOperatingSystem;
+                        if (is64bit == true)
+                        {
+                            fname = fname + "-64";
+                        }
+                        else
+                        {
+                            fname = fname + "-32";
+                        }
+                    }
+                }
+                if (item.name.Contains("forge"))
+                {
+                    forge = fname + ".jar";
+                    fname = fname + "-universal";
+                }
+                fname = fname + ".jar";
+
+
                 if (item.name.Contains("forge"))
                 {
                     cp = cp + mdir + libr + "\\" + forge + ";";
@@ -783,7 +927,7 @@ namespace hungry_launcher
                     string extractPath = mdir + "natives";
                     try
                     {
-                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                        ZipFile.ExtractToDirectory(zipPath, extractPath); 
                         if (Directory.Exists(extractPath + "\\META-INF"))
                         {
                             Directory.Delete(extractPath + "\\META-INF", true);
@@ -823,6 +967,7 @@ namespace hungry_launcher
         {
             public Dictionary<string, Objects> objects { get; set; }
         }
+
         public class Objects
         {
             public string hash { get; set; }
@@ -855,7 +1000,7 @@ namespace hungry_launcher
                 assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\virtual\\legacy\\indexes\\" + "legacy.json"));
 
                 FileInfo f = new FileInfo(mdir + "\\assets\\virtual\\legacy\\indexes\\" + format);
-                Form1.SetProgress(f.Length);
+                Form1.progress(f.Length, oForm1);
             }
             else
             {
@@ -869,7 +1014,7 @@ namespace hungry_launcher
                 assets = JsonConvert.DeserializeObject<Assets>(File.ReadAllText(mdir + "\\assets\\indexes\\" + format));
 
                 FileInfo f = new FileInfo(mdir + "\\assets\\indexes\\" + format);
-                Form1.SetProgress(f.Length);
+                Form1.progress(f.Length, oForm1);
             }
 
             foreach (KeyValuePair<string, Objects> i in assets.objects)
@@ -952,31 +1097,26 @@ namespace hungry_launcher
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
 
                             FileInfo f = new FileInfo(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
-                            Form1.SetProgress(f.Length);
+                            Form1.progress(f.Length, oForm1);
                         }
                         else
                         {
                             assetsdown.DownloadFile("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash, mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
 
                             FileInfo f = new FileInfo(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
-                            Form1.SetProgress(f.Length);
+                            Form1.progress(f.Length, oForm1);
                         }
                     }
                     catch
                     {
                         if (debug == true)
-                            MessageBox.Show("Cant download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
+                            MessageBox.Show("Can't download " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
                     }
                 }
             }
 
         }
-        public string getuuid()
-        {
-            string uuid = "";
 
-            return uuid;
-        }
         public long getsize(string vers, string mdir)
         {
             long fsize = 0;
@@ -1000,7 +1140,7 @@ namespace hungry_launcher
             catch
             {
                 if (debug == true)
-                    MessageBox.Show("Cant get size of " + vers + ".json");
+                    MessageBox.Show("Can't get size of " + vers + ".json");
             }
 
             try
@@ -1019,7 +1159,7 @@ namespace hungry_launcher
             catch
             {
                 if (debug == true)
-                    MessageBox.Show("Cant get size of " + vers + ".jar");
+                    MessageBox.Show("Can't get size of " + vers + ".jar");
             }
 
             WebClient client = new WebClient();
@@ -1197,7 +1337,7 @@ namespace hungry_launcher
                 catch
                 {
                     if (debug == true)
-                        MessageBox.Show("Cant get size of " + fname);
+                        MessageBox.Show("Can't get size of " + fname);
                 }
             }
 
@@ -1346,7 +1486,7 @@ namespace hungry_launcher
                     catch
                     {
                         if (debug == true)
-                            MessageBox.Show("Cant get size of " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
+                            MessageBox.Show("Can't get size of " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
                     }
                 }
             }
@@ -1354,6 +1494,11 @@ namespace hungry_launcher
             return fsize;
         }
 
+        public string getuuid()
+        {
+            string uuid = "";
 
+            return uuid;
+        }
     }
 }

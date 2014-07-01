@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace hungry_launcher.Properties {
+namespace hungry_launcher_v2_.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -68,6 +68,18 @@ namespace hungry_launcher.Properties {
             }
             set {
                 this["chBox4"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox5 {
+            get {
+                return ((bool)(this["chBox5"]));
+            }
+            set {
+                this["chBox5"] = value;
             }
         }
         
@@ -140,18 +152,6 @@ namespace hungry_launcher.Properties {
             }
             set {
                 this["combobox2"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool chBox5 {
-            get {
-                return ((bool)(this["chBox5"]));
-            }
-            set {
-                this["chBox5"] = value;
             }
         }
     }
