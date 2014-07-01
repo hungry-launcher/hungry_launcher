@@ -30,7 +30,7 @@ namespace hungry_launcher_v2_
         private utils.Version[] downver;
         private bool console, autoclose, downloading, license;
         private static long fsize;
- 
+
 
         public Form1()
         {
@@ -48,7 +48,7 @@ namespace hungry_launcher_v2_
                 {
                     MessageBox.Show("Launcher is already runnig");
                     Thread.Sleep(10);
-                    this.Close();
+                    Environment.Exit(0);
                 }
             }
 
@@ -67,13 +67,14 @@ namespace hungry_launcher_v2_
                     else
                     {
                         Thread.Sleep(10);
-                        Application.Exit();
+                        Environment.Exit(0);
                     }
             }
 
             bool fexist = Directory.Exists(mdir);
             if (fexist == false)
                 Directory.CreateDirectory(mdir);
+
 
             checkBox1.Checked = Properties.Settings.Default.chBox;
             checkBox2.Checked = Properties.Settings.Default.chBox2;
@@ -309,7 +310,8 @@ namespace hungry_launcher_v2_
                                             System.Diagnostics.Process pr = Process.GetProcessById(procid);
                                             memory = pr.WorkingSet64 / 1024;
                                         }
-                                        this.Close();
+                                        Thread.Sleep(10);
+                                        Environment.Exit(0);
                                     }
                                 }
                                 else
@@ -326,7 +328,8 @@ namespace hungry_launcher_v2_
                                             System.Diagnostics.Process pr = Process.GetProcessById(procid);
                                             memory = pr.WorkingSet64 / 1024;
                                         }
-                                        this.Close();
+                                        Thread.Sleep(10);
+                                        Environment.Exit(0);
                                     }
                                 }
                             }
@@ -435,7 +438,7 @@ namespace hungry_launcher_v2_
             }
         }
 
-        public static void progress(double value,Form1 oForm1)       
+        public static void progress(double value, Form1 oForm1)
         {
             oForm1.SetProgress(value);
         }
@@ -460,7 +463,7 @@ namespace hungry_launcher_v2_
 
         public void setform(Form1 form1)
         {
-            oForm1=form1;
+            oForm1 = form1;
         }
 
         public string getjavapath()  // Путь установки java
@@ -590,9 +593,9 @@ namespace hungry_launcher_v2_
 
             try
             {
-                jsondown.DownloadFile(verjson, mdir + "\\versions\\" + ver+"\\"+ver + ".json");
+                jsondown.DownloadFile(verjson, mdir + "\\versions\\" + ver + "\\" + ver + ".json");
                 FileInfo f = new FileInfo(mdir + "\\versions\\" + ver + "\\" + ver + ".json");
-                Form1.progress(f.Length,oForm1);
+                Form1.progress(f.Length, oForm1);
             }
             catch
             {
@@ -927,7 +930,7 @@ namespace hungry_launcher_v2_
                     string extractPath = mdir + "natives";
                     try
                     {
-                        ZipFile.ExtractToDirectory(zipPath, extractPath); 
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
                         if (Directory.Exists(extractPath + "\\META-INF"))
                         {
                             Directory.Delete(extractPath + "\\META-INF", true);
