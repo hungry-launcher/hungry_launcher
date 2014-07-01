@@ -307,7 +307,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::hungry_launcher_v2_.Properties.Resources._201206301439;
+            this.BackgroundImage = global::hungry_launcher_v2_.Properties.Resources.Image_Form1;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(734, 511);
             this.Controls.Add(this.checkBox5);

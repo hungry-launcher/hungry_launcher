@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>hungry_launcher_v2_</RootNamespace>
-    <AssemblyName>hungry_launcher%28v2%29</AssemblyName>
+    <AssemblyName>hungry_launcher</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -52,7 +52,7 @@
     <StartupObject>hungry_launcher_v2_.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>minecraft.ico</ApplicationIcon>
+    <ApplicationIcon>Image_Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -109,8 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Newtonsoft.Json.dll" />
-    <EmbeddedResource Include="201206301439.jpg" />
-    <EmbeddedResource Include="minecraft.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.1">
@@ -128,6 +126,12 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Image_Form1.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Image_Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

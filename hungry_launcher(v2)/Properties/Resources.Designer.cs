@@ -63,9 +63,9 @@ namespace hungry_launcher_v2_.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap _201206301439 {
+        internal static System.Drawing.Bitmap Image_Form1 {
             get {
-                object obj = ResourceManager.GetObject("201206301439", resourceCulture);
+                object obj = ResourceManager.GetObject("Image_Form1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
