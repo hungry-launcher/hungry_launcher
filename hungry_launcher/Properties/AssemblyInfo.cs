@@ -11,7 +11,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("hungry_launcher")]
-[assembly: AssemblyCopyright("hungry_ doctor ©  2014")]
+[assembly: AssemblyCopyright("hungry_doctor ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -21,7 +21,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0bf53a32-0bc2-4e64-acb7-5f0f01a2d277")]
+[assembly: Guid("92942c3a-3a85-4071-8dcf-521608d752d8")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -33,6 +33,6 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.1.9")]
-[assembly: AssemblyFileVersion("14.07.02.0230")]
+[assembly: AssemblyVersion("0.1.7.0")]
+[assembly: AssemblyFileVersion("14.07.03.1434")]
 [assembly: NeutralResourcesLanguageAttribute("en")]

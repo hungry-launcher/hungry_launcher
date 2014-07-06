@@ -5,17 +5,17 @@ Launcher for minecraft
 
 TO DO LIST:
 	  
-	  Manual set JAVA path;
+	  Finish manual set JAVA path;
 	  
-	  Security mode(all files are checked, make hash check);
-
-      Form for settings;
+	  try/catch while launching(if java path is incorrect)
+	  
+	  Security mode(all files are checked, make hash check);      
 
       Multi clients support; 
 
       Licence/pirate mode;
 	  
-	  Smooth bar animation;
+	  Smooth bar animation;	  
 	  
 	  Create launcher_profile.json;
 	  

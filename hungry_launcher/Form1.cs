@@ -17,12 +17,13 @@ using System.Threading;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 
-namespace hungry_launcher_v2_
+namespace hungry_launcher
 {
     public partial class Form1 : Form
     {
         utils ut = new utils();
         private static double buffer;
+        private string javahome;
         private string mdir;
         private string mversion;
         private string alocmem;
@@ -35,6 +36,16 @@ namespace hungry_launcher_v2_
         public Form1()
         {
             InitializeComponent();
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;
+                return cp;
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -71,6 +82,8 @@ namespace hungry_launcher_v2_
                     }
             }
 
+            this.TopMost = false;
+
             bool fexist = Directory.Exists(mdir);
             if (fexist == false)
                 Directory.CreateDirectory(mdir);
@@ -80,6 +93,7 @@ namespace hungry_launcher_v2_
             checkBox3.Checked = Properties.Settings.Default.chBox3;
             checkBox4.Checked = Properties.Settings.Default.chBox4;
             checkBox5.Checked = Properties.Settings.Default.chBox5;
+            checkBox5.Checked = Properties.Settings.Default.chBox6;
 
             if (checkBox2.Checked == true)
             {
@@ -88,6 +102,7 @@ namespace hungry_launcher_v2_
             textBox1.Text = Properties.Settings.Default.Textbox;
             textBox3.Text = Properties.Settings.Default.Textbox3;
 
+            javahome = ut.getjavapath();
             mver = ut.installedver(mdir);
 
             if (mver != null)
@@ -147,6 +162,11 @@ namespace hungry_launcher_v2_
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox2_DropDown(object sender, EventArgs e)
         {
 
         }
@@ -230,11 +250,17 @@ namespace hungry_launcher_v2_
             license = checkBox5.Checked;
         }
 
+        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox6.Checked == true) button6.Enabled = false;
+            else button6.Enabled = true;
+            Properties.Settings.Default.chBox6 = checkBox3.Checked;
+            Properties.Settings.Default.Save();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-            string javahome;
             long memory = 0;
-            javahome = ut.getjavapath();
             if (javahome == null)
             {
                 MessageBox.Show("Can't find JAVA");
@@ -297,6 +323,7 @@ namespace hungry_launcher_v2_
                                 launch = launch.Replace("${user_type}", a + "mojang" + a);
 
                                 launch = memorys + launch;
+                                
                                 if (console == true)
                                 {
                                     Process minecraft = new Process();
@@ -422,6 +449,40 @@ namespace hungry_launcher_v2_
             this.checkBox3.Enabled = true;
             this.downloading = false;
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            panel2.Show();
+            panel1.Hide();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            panel1.Show();
+            panel2.Hide();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            string path;
+            using (var dialog = new FolderBrowserDialog())
+            {
+                dialog.ShowNewFolderButton = false;
+                dialog.SelectedPath = javahome;
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    path = dialog.SelectedPath;
+                    javahome = path;
+                }
+                else
+                {
+                    path = javahome;
+                }
+            }
+            Properties.Settings.Default.javapath = javahome;
+            Properties.Settings.Default.Save();
+        }
+
         public void SetProgress(double value)
         {
             buffer = buffer + value;
@@ -443,6 +504,8 @@ namespace hungry_launcher_v2_
         {
             oForm1.SetProgress(value);
         }
+
+
     }
 
 
@@ -570,8 +633,6 @@ namespace hungry_launcher_v2_
         public class Version
         {
             public string id { get; set; }
-            public string time { get; set; }
-            public string releaseTime { get; set; }
             public string type { get; set; }
         }
 
@@ -633,23 +694,17 @@ namespace hungry_launcher_v2_
             public string action { get; set; }
             public Os os { get; set; }
         }
-        public class Extract
-        {
-            public List<string> exclude { get; set; }
-        }
+
         public class Library
         {
             public string name { get; set; }
             public string url { get; set; }
-            public Extract extract { get; set; }
             public List<Rule> rules { get; set; }
             public Natives natives { get; set; }
         }
 
         public class Libraries
         {
-            public string id { get; set; }
-            public string type { get; set; }
             public string mainClass { get; set; }
             public string minecraftArguments { get; set; }
             public string assets { get; set; }
