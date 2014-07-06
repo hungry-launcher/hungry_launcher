@@ -7,6 +7,8 @@ TO DO LIST:
 	  
 	  Finish manual set JAVA path;
 	  
+	  Button for updating versions.json
+	  
 	  try/catch while launching(if java path is incorrect)
 	  
 	  Security mode(all files are checked, make hash check);      
