@@ -1,14 +1,11 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Net;
 using System.IO;
 using System.IO.Compression;
@@ -66,11 +63,15 @@ namespace hungry_launcher
             ut.setform(this);
 
             mdir = Properties.Settings.Default.mdir;
+
+            this.TopMost = true;
+
             if (mdir == "")
             {
                 using (var dialog = new FolderBrowserDialog())
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
+                        this.TopMost = false;
                         mdir = dialog.SelectedPath;
                         Properties.Settings.Default.mdir = mdir;
                         Properties.Settings.Default.Save();
@@ -82,7 +83,7 @@ namespace hungry_launcher
                     }
             }
 
-            this.TopMost = false;
+            this.TopMost = true;
 
             bool fexist = Directory.Exists(mdir);
             if (fexist == false)
@@ -93,7 +94,16 @@ namespace hungry_launcher
             checkBox3.Checked = Properties.Settings.Default.chBox3;
             checkBox4.Checked = Properties.Settings.Default.chBox4;
             checkBox5.Checked = Properties.Settings.Default.chBox5;
-            checkBox5.Checked = Properties.Settings.Default.chBox6;
+            checkBox6.Checked = Properties.Settings.Default.chBox6;
+
+            if (checkBox6.Checked == false)
+            {
+                javahome = Properties.Settings.Default.javapath;
+            }
+            else
+            {
+                javahome = ut.getjavapath();
+            }
 
             if (checkBox2.Checked == true)
             {
@@ -102,7 +112,6 @@ namespace hungry_launcher
             textBox1.Text = Properties.Settings.Default.Textbox;
             textBox3.Text = Properties.Settings.Default.Textbox3;
 
-            javahome = ut.getjavapath();
             mver = ut.installedver(mdir);
 
             if (mver != null)
@@ -128,6 +137,8 @@ namespace hungry_launcher
                 button3.Enabled = false;
                 comboBox3.Enabled = false;
             }
+
+            this.TopMost = false;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -234,6 +245,7 @@ namespace hungry_launcher
         {
             Properties.Settings.Default.chBox3 = checkBox3.Checked;
             Properties.Settings.Default.Save();
+            autoclose = checkBox3.Checked;
         }
 
         private void checkBox4_CheckedChanged(object sender, EventArgs e)
@@ -252,9 +264,13 @@ namespace hungry_launcher
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox6.Checked == true) button6.Enabled = false;
+            if (checkBox6.Checked == true)
+            {
+                javahome = ut.getjavapath();
+                button6.Enabled = false;
+            }
             else button6.Enabled = true;
-            Properties.Settings.Default.chBox6 = checkBox3.Checked;
+            Properties.Settings.Default.chBox6 = checkBox6.Checked;
             Properties.Settings.Default.Save();
         }
 
@@ -275,7 +291,7 @@ namespace hungry_launcher
                 {
                     if (string.IsNullOrEmpty(comboBox1.Text))
                     {
-                        MessageBox.Show("Verion doesn't set");
+                        MessageBox.Show("Version doesn't set");
                     }
                     else
                     {
@@ -301,7 +317,6 @@ namespace hungry_launcher
                             else
                             {
                                 memory = 0;
-                                autoclose = checkBox3.Checked;
                                 console = checkBox1.Checked;
                                 mversion = comboBox1.Text;
                                 alocmem = textBox3.Text + "M";
@@ -323,41 +338,58 @@ namespace hungry_launcher
                                 launch = launch.Replace("${user_type}", a + "mojang" + a);
 
                                 launch = memorys + launch;
-                                
+
                                 if (console == true)
                                 {
                                     Process minecraft = new Process();
-                                    ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
-                                    minecraft.StartInfo = mcstart;
-                                    minecraft.Start();
-                                    int procid = minecraft.Id;
-                                    if (autoclose == true && checkBox3.Enabled == true)
+                                    try
                                     {
-                                        while (memory < 200000)
+                                        ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\java.exe", launch);
+                                        minecraft.StartInfo = mcstart;
+                                        minecraft.Start();
+                                        int procid = minecraft.Id;
+                                        ut.launprof(username, mversion, "Standart", mdir);
+                                        if (autoclose == true)
                                         {
-                                            System.Diagnostics.Process pr = Process.GetProcessById(procid);
-                                            memory = pr.WorkingSet64 / 1024;
+                                            while (memory < 200000)
+                                            {
+                                                System.Diagnostics.Process pr = Process.GetProcessById(procid);
+                                                memory = pr.WorkingSet64 / 1024;
+                                            }
+                                            Thread.Sleep(10);
+                                            Environment.Exit(0);
                                         }
-                                        Thread.Sleep(10);
-                                        Environment.Exit(0);
                                     }
+                                    catch
+                                    {
+                                        MessageBox.Show("Can't start minecraft, something is wrong");
+                                    }
+
                                 }
                                 else
                                 {
                                     Process minecraft = new Process();
-                                    ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
-                                    minecraft.StartInfo = mcstart;
-                                    minecraft.Start();
-                                    int procid = minecraft.Id;
-                                    if (autoclose == true && checkBox3.Enabled == true)
+                                    try
                                     {
-                                        while (memory < 200000)
+                                        ProcessStartInfo mcstart = new ProcessStartInfo(javahome + "\\bin\\javaw.exe", launch);
+                                        minecraft.StartInfo = mcstart;
+                                        minecraft.Start();
+                                        int procid = minecraft.Id;
+                                        ut.launprof(username, mversion, "Standart", mdir);
+                                        if (autoclose == true)
                                         {
-                                            System.Diagnostics.Process pr = Process.GetProcessById(procid);
-                                            memory = pr.WorkingSet64 / 1024;
+                                            while (memory < 200000)
+                                            {
+                                                System.Diagnostics.Process pr = Process.GetProcessById(procid);
+                                                memory = pr.WorkingSet64 / 1024;
+                                            }
+                                            Thread.Sleep(10);
+                                            Environment.Exit(0);
                                         }
-                                        Thread.Sleep(10);
-                                        Environment.Exit(0);
+                                    }
+                                    catch
+                                    {
+                                        MessageBox.Show("Can't start minecraft, something is wrong");
                                     }
                                 }
                             }
@@ -1553,6 +1585,65 @@ namespace hungry_launcher
             }
 
             return fsize;
+        }
+
+
+        public class Authentication
+        {
+            public string username { get; set; }
+        }
+
+        public class Profiles
+        {
+            public Authentication authentication { get; set; }
+            public string name { get; set; }
+            public string lastVersionId { get; set; }
+            public string javaArgs { get; set; }
+        }
+
+        public class LaunchProfiles
+        {
+            public Dictionary<string, Profiles> profiles { get; set; }
+            public string selectedProfile { get; set; }
+            public string clientToken { get; set; }
+        }
+
+        public void launprof(string name, string version, string client, string mdir)
+        {
+            Authentication auth = new Authentication();
+            auth.username = name;
+
+            Profiles pr = new Profiles();
+            pr.authentication = auth;
+            pr.javaArgs = "";
+            pr.lastVersionId = client;
+            pr.name = client;
+
+            Dictionary<string, Profiles> pro = new Dictionary<string, Profiles>();
+            pro.Add(client, pr);
+
+            LaunchProfiles prof = new LaunchProfiles();
+            prof.clientToken = "";
+            prof.selectedProfile = client;
+            prof.profiles = pro;
+
+            try
+            {
+                string output = JsonConvert.SerializeObject(prof, Formatting.Indented);
+
+                bool fexist = File.Exists(mdir + "\\launcher_profiles.json");
+                if (fexist == true)
+                    File.Delete(mdir + "\\launcher_profiles.json");
+
+                StreamWriter sr = new StreamWriter(mdir + "\\launcher_profiles.json");
+                sr.WriteLine(output);
+                sr.Close();
+            }
+            catch 
+            {
+                if (debug == true)
+                    MessageBox.Show("Can't create launcher_profile.json");
+            }
         }
 
         public string getuuid()
