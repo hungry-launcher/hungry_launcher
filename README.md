@@ -5,7 +5,7 @@ Launcher for minecraft
 
 TO DO LIST:
 	  
-	  Button for updating versions.json
+	  Button for updating versions.json;
 	  
 	  Security mode(all files are checked, make hash check);      
 
@@ -20,5 +20,9 @@ TO DO LIST:
       Own site login support; 
 	  
 	  Faster downloading(async method);
+	  
+	  Full list of installed in launcher_profiles.json;
+	  
+	  Scrollbar for comboboxes[?];
 	  
       Another? 

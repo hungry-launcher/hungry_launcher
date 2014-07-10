@@ -324,6 +324,7 @@ namespace hungry_launcher
                                 char a = '"';
                                 string memorys = " -Xms512M -Xmx{0}";
                                 memorys = string.Format(memorys, alocmem);
+                                ut.donwlibs(mversion, mdir);
                                 string launch = ut.extractlibs(mversion, mdir);
 
                                 launch = launch.Replace("${auth_player_name}", a + username + a);
