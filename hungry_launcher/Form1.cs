@@ -3,14 +3,15 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Net;
 using System.IO;
+using System.Text;
 using System.IO.Compression;
 using Microsoft.Win32;
-using System.Threading;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 
@@ -19,13 +20,18 @@ namespace hungry_launcher
     public partial class Form1 : Form
     {
         utils ut = new utils();
+        private utils.GetRequest response;
         private static double buffer;
         private string javahome;
         private string mdir;
         private string mversion;
         private string alocmem;
+        private string uuid;
+        private string token;
+        private bool fastdown;
         private string[] mver;
         private utils.Version[] downver;
+        private bool logged;
         private bool console, autoclose, downloading, license;
         private static long fsize;
 
@@ -95,6 +101,9 @@ namespace hungry_launcher
             checkBox4.Checked = Properties.Settings.Default.chBox4;
             checkBox5.Checked = Properties.Settings.Default.chBox5;
             checkBox6.Checked = Properties.Settings.Default.chBox6;
+            checkBox7.Checked = Properties.Settings.Default.chBox7;
+            checkBox8.Checked = Properties.Settings.Default.chBox8;
+            logged = Properties.Settings.Default.logged;
 
             if (checkBox6.Checked == false)
             {
@@ -111,6 +120,60 @@ namespace hungry_launcher
             }
             textBox1.Text = Properties.Settings.Default.Textbox;
             textBox3.Text = Properties.Settings.Default.Textbox3;
+
+            if (checkBox8.Checked == true && checkBox5.Checked == true && logged == true)
+            {
+                button7.PerformClick();
+            }
+
+            if (checkBox5.Checked == true)
+            {
+                textBox2.Text = Properties.Settings.Default.Textbox2;
+
+                label1.Text = "   Login    ";
+
+                if (logged == true)
+                {
+                    textBox1.Enabled = false;
+                    textBox2.Enabled = false;
+
+                    button7.Visible = false;//Exchane button 7
+                    button8.Visible = true; //abd button 8 coords
+
+                    label7.Text = "Hello " + response.selectedProfile.name;
+                    label7.Visible = true;
+
+                    button1.Visible = true;
+                }
+                else
+                {
+                    textBox1.Enabled = true;
+                    textBox2.Enabled = true;
+
+                    button8.Visible = false;//Exchane button 7
+                    button7.Visible = true; //abd button 8 coords
+
+                    label7.Text = "Hello ";
+                    label7.Visible = false;
+
+                    button1.Visible = false;
+                }
+
+            }
+            else
+            {
+                label1.Text = "Nickname ";
+
+                textBox1.Enabled = true;
+                textBox2.Enabled = false;
+
+                button7.Visible = false;
+                button8.Visible = false;
+
+                button1.Visible = true;
+
+                textBox2.Text = "";
+            }
 
             mver = ut.installedver(mdir);
 
@@ -208,7 +271,7 @@ namespace hungry_launcher
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked == true)
+            if (checkBox2.Checked == true && license == true)
             {
                 Properties.Settings.Default.Textbox2 = textBox2.Text;
                 Properties.Settings.Default.Save();
@@ -260,6 +323,55 @@ namespace hungry_launcher
             Properties.Settings.Default.chBox5 = checkBox5.Checked;
             Properties.Settings.Default.Save();
             license = checkBox5.Checked;
+
+            if (checkBox5.Checked == true)
+            {
+                textBox2.Text = Properties.Settings.Default.Textbox2;
+
+                label1.Text = "   Login    ";
+
+                if (logged == true)
+                {
+                    textBox1.Enabled = false;
+                    textBox2.Enabled = false;
+
+                    button7.Visible = false;//Exchane button 7
+                    button8.Visible = true; //abd button 8 coords
+
+                    label7.Text = "Hello " + response.selectedProfile.name;
+                    label7.Visible = true;
+
+                    button1.Visible = true;
+                }
+                else
+                {
+                    textBox1.Enabled = true;
+                    textBox2.Enabled = true;
+
+                    button8.Visible = false;//Exchane button 7
+                    button7.Visible = true; //abd button 8 coords
+
+                    label7.Text = "Hello ";
+                    label7.Visible = false;
+
+                    button1.Visible = false;
+                }
+
+            }
+            else
+            {
+                label1.Text = "Nickname ";
+
+                textBox1.Enabled = true;
+                textBox2.Enabled = false;
+
+                button7.Visible = false;
+                button8.Visible = false;
+
+                button1.Visible = true;
+
+                textBox2.Text = "";
+            }
         }
 
         private void checkBox6_CheckedChanged(object sender, EventArgs e)
@@ -271,6 +383,23 @@ namespace hungry_launcher
             }
             else button6.Enabled = true;
             Properties.Settings.Default.chBox6 = checkBox6.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void checkBox7_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox7.Checked == true)
+            {
+                fastdown = true;
+            }
+            else fastdown = false;
+            Properties.Settings.Default.chBox7 = checkBox7.Checked;
+            Properties.Settings.Default.Save();
+        }
+
+        private void checkBox8_CheckedChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.chBox8 = checkBox8.Checked;
             Properties.Settings.Default.Save();
         }
 
@@ -320,20 +449,37 @@ namespace hungry_launcher
                                 console = checkBox1.Checked;
                                 mversion = comboBox1.Text;
                                 alocmem = textBox3.Text + "M";
-                                string username = textBox1.Text;
                                 char a = '"';
                                 string memorys = " -Xms512M -Xmx{0}";
                                 memorys = string.Format(memorys, alocmem);
                                 ut.donwlibs(mversion, mdir);
                                 string launch = ut.extractlibs(mversion, mdir);
 
+                                string username;
+                                if (license == true)
+                                {
+                                    username = response.selectedProfile.name;
+                                    uuid = response.selectedProfile.id;
+                                    token = response.accessToken;
+                                }
+                                else
+                                {
+                                    username = textBox1.Text;
+                                    uuid = ut.getuuid();
+                                }
+
                                 launch = launch.Replace("${auth_player_name}", a + username + a);
                                 launch = launch.Replace("${version_name}", a + mversion + a);
                                 launch = launch.Replace("${game_directory}", a + mdir + a);
                                 if (license == true)
                                 {
-                                    //launch = launch.Replace(" --uuid ${auth_uuid}", "");
-                                    //launch = launch.Replace(" --accessToken ${auth_access_token}", "");
+                                    launch = launch.Replace("${auth_uuid}", a + uuid + a);
+                                    launch = launch.Replace("${auth_access_token}", a + token + a);
+                                }
+                                else
+                                {
+                                    launch = launch.Replace("${auth_uuid}", a + uuid + a);
+                                    launch = launch.Replace("${auth_access_token}", a + uuid + a);
                                 }
                                 launch = launch.Replace("${user_properties}", "{}");
                                 launch = launch.Replace("${user_type}", a + "mojang" + a);
@@ -427,7 +573,7 @@ namespace hungry_launcher
         {
             if (comboBox3.Text != "")
             {
-                button3.Enabled = false;
+                checkBox7.Enabled = false;
                 comboBox3.Enabled = false;
                 checkBox3.Enabled = false;
                 downloading = true;
@@ -442,13 +588,10 @@ namespace hungry_launcher
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
             string combo3text = "";
-            bool but3enab = false;
-            bool com3enab = false;
+
             MethodInvoker getValues = new MethodInvoker(delegate()
             {
                 combo3text = comboBox3.Text;
-                but3enab = button3.Enabled;
-                com3enab = comboBox3.Enabled;
             });
 
             if (this.InvokeRequired)
@@ -464,16 +607,57 @@ namespace hungry_launcher
 
             if (mversion != null)
             {
-                fsize = ut.getsize(mversion, mdir);
-                ut.downloadver(mversion, mdir);
-                ut.donwlibs(mversion, mdir);
-                ut.getassets(mdir);
+
+
+                if (fastdown == true)
+                {
+                    Thread th01 = new Thread(delegate() { ut.AS1getsize(mversion, mdir, out fsize); });
+                    th01.Start();
+
+                    long filesize = 0;
+
+                    Thread th02 = new Thread(delegate() { ut.AS2getsize(mversion, mdir, out filesize); });
+                    th02.Start();
+
+                    do
+                    {
+                        Thread.Sleep(25);
+                        if (th01.IsAlive == false) th01.Join();
+                        if (th02.IsAlive == false) th02.Join();
+                    } while (th02.IsAlive == true || th01.IsAlive == true);
+
+                    fsize += filesize;
+
+                    Thread th1 = new Thread(delegate() { ut.downloadver(mversion, mdir); });     //Normal
+                    th1.Start();
+
+                    Thread th2 = new Thread(delegate() { ut.getassets(mdir); });          // Async
+                    th2.Start();
+
+                    Thread th3 = new Thread(delegate() { ut.donwlibs(mversion, mdir); }); // Async
+                    th1.Join();
+
+                    th3.Start();
+
+                    th2.Join();
+                    th3.Join();
+
+                }
+                else
+                {
+                    fsize = ut.getsize(mversion, mdir);
+                    ut.downloadver(mversion, mdir);
+                    ut.donwlibs(mversion, mdir);
+                    ut.getassets(mdir);
+                }
             }
         }
+
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.button3.Enabled = true;
             this.comboBox3.Enabled = true;
+            this.checkBox7.Enabled = true;
             buffer = 0;
             fsize = 0;
             progressBar1.Invoke(new MethodInvoker(delegate() { progressBar1.Value = Convert.ToInt32(0); }));
@@ -487,6 +671,8 @@ namespace hungry_launcher
         {
             panel2.Show();
             panel1.Hide();
+            if (downloading == true) button3.Enabled = false;
+            else button3.Enabled = true;
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -516,6 +702,59 @@ namespace hungry_launcher
             Properties.Settings.Default.Save();
         }
 
+        private void button7_Click(object sender, EventArgs e)
+        {
+            response = ut.sendrequest(textBox1.Text, textBox2.Text);
+
+            if (response != null && response.error == null)
+            {
+                logged = true;
+
+                Properties.Settings.Default.logged = logged;
+                Properties.Settings.Default.Save();
+
+                textBox1.Enabled = false;
+                textBox2.Enabled = false;
+                button7.Visible = false;//Exchane button 7
+                button8.Visible = true; //abd button 8 coords
+
+                label7.Text = "Hello " + response.selectedProfile.name;
+                label7.Visible = true;
+
+                button1.Visible = true;
+            }
+            else
+            {
+                logged = false;
+
+                Properties.Settings.Default.logged = logged;
+                Properties.Settings.Default.Save();
+
+                button1.Visible = false;
+                MessageBox.Show("Cant't connect to authentication server or login/password is wrong");
+            }
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            ut.logout(textBox1.Text, textBox2.Text);
+
+            logged = false;
+
+            Properties.Settings.Default.logged = logged;
+            Properties.Settings.Default.Save();
+
+            textBox1.Enabled = true;
+            textBox2.Enabled = true;
+            button8.Visible = false;//Exchane button 7
+            button7.Visible = true; //abd button 8 coords
+
+            label7.Text = "Hello ";
+            label7.Visible = false;
+
+            button1.Visible = false;
+        }
+
         public void SetProgress(double value)
         {
             buffer = buffer + value;
@@ -537,8 +776,6 @@ namespace hungry_launcher
         {
             oForm1.SetProgress(value);
         }
-
-
     }
 
 
@@ -674,7 +911,7 @@ namespace hungry_launcher
             public List<Version> versions { get; set; }
         }
 
-        public void downloadver(string ver, string mdir)   // Скачать jar и json версии
+        public void downloadver(string ver, string mdir)   // Скачать jar и json версии, add cache check
         {
             string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".json";
             string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + ver + "/" + ver + ".jar";
@@ -744,7 +981,7 @@ namespace hungry_launcher
             public List<Library> libraries { get; set; }
         }
 
-        public void donwlibs(string vers, string mdir)  // Скачать библиотеки
+        public void donwlibs(string vers, string mdir)  // Скачать библиотеки, add cache check
         {
             Libraries libs = JsonConvert.DeserializeObject<Libraries>(File.ReadAllText(mdir + "\\versions\\" + vers + "\\" + vers + ".json"));
             mdir = mdir + "\\libraries\\";
@@ -853,6 +1090,7 @@ namespace hungry_launcher
 
                 if (fexist == false)
                 {
+
                     try
                     {
                         if ((item.natives == null) && (item.url == null))
@@ -906,6 +1144,7 @@ namespace hungry_launcher
                     }
                 }
             }
+
         }
 
         public string extractlibs(string vers, string mdir)  // Извлечть и получить путь библиотек
@@ -1586,8 +1825,415 @@ namespace hungry_launcher
             }
 
             return fsize;
-        }
+        } //Old Normal
 
+        public void AS1getsize(string vers, string mdir, out long size)
+        {
+            long fsize = 0;
+
+            string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + vers + "/" + vers + ".json";
+            string verget = "http://s3.amazonaws.com/Minecraft.Download/versions/" + vers + "/" + vers + ".jar";
+
+            try
+            {
+                WebRequest jsondown = HttpWebRequest.Create(verjson);
+                jsondown.Method = "HEAD";
+                using (System.Net.WebResponse resp = jsondown.GetResponse())
+                {
+                    long ContentLength;
+                    if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                    {
+                        fsize += ContentLength;
+                    }
+                }
+            }
+            catch
+            {
+                if (debug == true)
+                    MessageBox.Show("Can't get size of " + vers + ".json");
+            }
+
+            try
+            {
+                WebRequest verdown = HttpWebRequest.Create(verget);
+                verdown.Method = "HEAD";
+                using (System.Net.WebResponse resp = verdown.GetResponse())
+                {
+                    long ContentLength;
+                    if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                    {
+                        fsize += ContentLength;
+                    }
+                }
+            }
+            catch
+            {
+                if (debug == true)
+                    MessageBox.Show("Can't get size of " + vers + ".jar");
+            }
+
+            WebClient client = new WebClient();
+            StreamReader reader;
+            String content = "";
+
+            try
+            {
+                Stream streams = client.OpenRead(verjson);
+                reader = new StreamReader(streams);
+                content = reader.ReadToEnd();
+                streams.Close();
+            }
+            catch
+            {
+                if (debug == true)
+                    MessageBox.Show("Cant get sizes of libraries");
+            }
+
+            Libraries libs = JsonConvert.DeserializeObject<Libraries>(content);
+
+            foreach (var item in libs.libraries)
+            {
+                bool osx = false;
+                if (item.rules != null)
+                {
+                    foreach (var rul in item.rules)
+                    {
+                        if ((rul.action != null) && (rul.action == "allow"))
+                        {
+                            if ((rul.os != null) && (rul.os.name == "osx"))
+                            {
+                                osx = true;
+                            }
+
+                        }
+                    }
+                }
+                if (osx == true)
+                {
+                    continue;
+                }
+
+                string libr = "";
+                string url = "";
+                string fname = "";
+                string forge = "";
+                string chname = "";
+                int j = 0;
+
+                for (int i = 0; i < item.name.Length; i++)
+                {
+                    if (item.name[i] == ':')
+                    {
+                        libr = libr + "\\";
+                        i++;
+                        j = i;
+                        break;
+                    }
+                    if (item.name[i] == '.')
+                    {
+                        libr = libr + "\\";
+                    }
+                    else
+                    {
+                        libr = libr + item.name[i];
+                    }
+                }
+
+                for (int k = j; k < item.name.Length; k++)
+                {
+                    if (item.name[k] == ':')
+                    {
+                        fname = fname + "-";
+                        libr = libr + "\\";
+                    }
+                    else
+                    {
+                        fname = fname + item.name[k];
+                        libr = libr + item.name[k];
+                    }
+                }
+
+                if ((item.natives != null) && (item.natives.windows != null))
+                {
+                    fname = fname + "-natives-windows";
+                    if (item.natives.windows.Contains("${arch}"))
+                    {
+                        bool is64bit = System.Environment.Is64BitOperatingSystem;
+                        if (is64bit == true)
+                        {
+                            fname = fname + "-64";
+                        }
+                        else
+                        {
+                            fname = fname + "-32";
+                        }
+                    }
+                }
+                if (item.name.Contains("forge"))
+                {
+                    forge = fname + ".jar";
+                    fname = fname + "-universal";
+                    chname = forge;
+                }
+                else
+                {
+                    chname = fname + ".jar";
+                }
+                fname = fname + ".jar";
+                url = libr + '/' + fname;
+                url = url.Replace("\\", "/");
+
+                try
+                {
+                    if ((item.natives == null) && (item.url == null))
+                    {
+                        string getlib = "https://libraries.minecraft.net/" + url;
+                        WebRequest libdown = HttpWebRequest.Create(getlib);
+                        libdown.Method = "HEAD";
+                        using (System.Net.WebResponse resp = libdown.GetResponse())
+                        {
+                            long ContentLength;
+                            if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                            {
+                                fsize += ContentLength;
+                            }
+                        }
+                    }
+                    else if ((item.natives != null) && (item.natives.windows != null) && (item.url == null))
+                    {
+                        string getlib = "https://libraries.minecraft.net/" + url;
+                        WebRequest libdown = HttpWebRequest.Create(getlib);
+                        libdown.Method = "HEAD";
+                        using (System.Net.WebResponse resp = libdown.GetResponse())
+                        {
+                            long ContentLength;
+                            if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                            {
+                                fsize += ContentLength;
+                            }
+                        }
+                    }
+                    else if (item.url != null)
+                    {
+                        string getlib = "";
+                        if (item.name.Contains("scala"))
+                        {
+                            getlib = "http://repo1.maven.org/maven2/" + url;
+                        }
+                        else
+                        {
+                            getlib = item.url + url;
+                        }
+                        WebRequest libdown = HttpWebRequest.Create(getlib);
+                        libdown.Method = "HEAD";
+                        using (System.Net.WebResponse resp = libdown.GetResponse())
+                        {
+                            long ContentLength;
+                            if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                            {
+                                fsize += ContentLength;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    if (debug == true)
+                        MessageBox.Show("Can't get size of " + fname);
+                }
+            }
+
+
+            size = fsize;
+        } // New normal, must be async
+
+        public void AS2getsize(string vers, string mdir, out long sizes)
+        {
+            long fsize = 0;
+
+            string verjson = "http://s3.amazonaws.com/Minecraft.Download/versions/" + vers + "/" + vers + ".json";
+
+            WebClient client = new WebClient();
+            StreamReader reader;
+            String content = "";
+
+            try
+            {
+                Stream streams = client.OpenRead(verjson);
+                reader = new StreamReader(streams);
+                content = reader.ReadToEnd();
+                streams.Close();
+            }
+            catch
+            {
+                if (debug == true)
+                    MessageBox.Show("Cant get sizes of libraries");
+            }
+
+            Libraries libs = JsonConvert.DeserializeObject<Libraries>(content);
+
+            if (libs.assets != null)
+            {
+                assetsversion = libs.assets;
+            }
+            else
+            {
+                assetsversion = "old";
+            }
+
+
+            if (assetsversion == "old")
+            {
+                assetsversion = "0";
+            }
+            string assetsjson = "";
+            string format = "";
+            string names = "";
+            for (int i = 0; i < assetsversion.Length; i++)
+                if (assetsversion[i] != '.') assetsjson = assetsjson + assetsversion[i];
+            int version = Convert.ToInt32(assetsjson);
+
+
+            Assets assets;
+
+            if (version < 172)
+            {
+                format = assetsjson = "legacy.json";
+                assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
+
+                Stream stream = client.OpenRead(assetsjson);
+                reader = new StreamReader(stream);
+                content = reader.ReadToEnd();
+                reader.Close();
+                assets = JsonConvert.DeserializeObject<Assets>(content);
+
+                WebRequest assetsjsondown = HttpWebRequest.Create(assetsjson);
+                assetsjsondown.Method = "HEAD";
+                using (System.Net.WebResponse resp = assetsjsondown.GetResponse())
+                {
+                    long ContentLength;
+                    if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                    {
+                        fsize += ContentLength;
+                    }
+                }
+            }
+            else
+            {
+                format = assetsjson = assetsversion + ".json";
+                assetsjson = "http://s3.amazonaws.com/Minecraft.Download/indexes/" + assetsjson;
+
+                Stream stream = client.OpenRead(assetsjson);
+                reader = new StreamReader(stream);
+                content = reader.ReadToEnd();
+                reader.Close();
+                assets = JsonConvert.DeserializeObject<Assets>(content);
+
+                WebRequest assetsjsondown = HttpWebRequest.Create(assetsjson);
+                assetsjsondown.Method = "HEAD";
+                using (System.Net.WebResponse resp = assetsjsondown.GetResponse())
+                {
+                    long ContentLength;
+                    if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                    {
+                        fsize += ContentLength;
+                    }
+                }
+            }
+
+            foreach (KeyValuePair<string, Objects> i in assets.objects)
+            {
+                string hash = Convert.ToString(i.Value.hash);
+                int size = Convert.ToInt32(i.Value.size);
+                bool hashok = false;
+                bool fexist = false;
+                string fSHA1 = "";
+
+                names = i.Key.ToString();
+                if (names.Contains("/"))
+                {
+                    if (names.LastIndexOf("/") > 0)
+                        names = names.Substring(0, names.LastIndexOf("/"));
+                    names = names.Replace("/", "\\");
+                    names = "\\" + names;
+                }
+                else
+                {
+                    names = null;
+                }
+
+                if (version < 172)
+                {
+                    fexist = File.Exists(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1));
+                    if (fexist == true)
+                    {
+                        using (FileStream stream = File.OpenRead(mdir + "\\assets\\virtual\\legacy" + names + "\\" + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/") + 1)))
+                        {
+                            SHA1Managed sha = new SHA1Managed();
+                            byte[] checksum = sha.ComputeHash(stream);
+                            fSHA1 = BitConverter.ToString(checksum).Replace("-", string.Empty);
+                            fSHA1 = fSHA1.ToLower();
+                        }
+                        if (fSHA1 == hash) hashok = true;
+                    }
+                }
+                else
+                {
+                    fexist = File.Exists(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash);
+                    if (fexist == true)
+                    {
+                        using (FileStream stream = File.OpenRead(mdir + "\\assets\\objects\\" + hash.Substring(0, 2) + "\\" + hash))
+                        {
+                            SHA1Managed sha = new SHA1Managed();
+                            byte[] checksum = sha.ComputeHash(stream);
+                            fSHA1 = BitConverter.ToString(checksum).Replace("-", string.Empty);
+                            fSHA1 = fSHA1.ToLower();
+                        }
+                        if (fSHA1 == hash) hashok = true;
+                    }
+                }
+
+                if ((fexist == false) || (fexist == true && hashok == false))
+                {
+                    try
+                    {
+                        if (version < 172)
+                        {
+                            WebRequest assetdown = HttpWebRequest.Create("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash);
+                            assetdown.Method = "HEAD";
+                            using (System.Net.WebResponse resp = assetdown.GetResponse())
+                            {
+                                long ContentLength;
+                                if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                                {
+                                    fsize += ContentLength;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            WebRequest assetdown = HttpWebRequest.Create("http://resources.download.minecraft.net/" + hash.Substring(0, 2) + "/" + hash);
+                            assetdown.Method = "HEAD";
+                            using (System.Net.WebResponse resp = assetdown.GetResponse())
+                            {
+                                long ContentLength;
+                                if (long.TryParse(resp.Headers.Get("Content-Length"), out ContentLength))
+                                {
+                                    fsize += ContentLength;
+                                }
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        if (debug == true)
+                            MessageBox.Show("Can't get size of " + i.Key.ToString().Substring(i.Key.ToString().LastIndexOf("/")));
+                    }
+                }
+            }
+
+            sizes = fsize;
+        } // New normal, must be async
 
         public class Authentication
         {
@@ -1609,7 +2255,7 @@ namespace hungry_launcher
             public string clientToken { get; set; }
         }
 
-        public void launprof(string name, string version, string client, string mdir)
+        public void launprof(string name, string version, string client, string mdir)  // Make like mojang launcher
         {
             Authentication auth = new Authentication();
             auth.username = name;
@@ -1640,18 +2286,131 @@ namespace hungry_launcher
                 sr.WriteLine(output);
                 sr.Close();
             }
-            catch 
+            catch
             {
                 if (debug == true)
                     MessageBox.Show("Can't create launcher_profile.json");
             }
         }
 
+        public class Agent
+        {
+            public string name { get; set; }
+            public string version { get; set; }
+        }
+
+        public class SendRequest
+        {
+            public Agent agent { get; set; }
+            public string username { get; set; }
+            public string password { get; set; }
+            public string clientToken { get; set; }
+        }
+
+
+        public class AvailableProfile
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+        }
+
+        public class SelectedProfile
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+        }
+
+        public class GetRequest
+        {
+            public string accessToken { get; set; }
+            public string clientToken { get; set; }
+            public string error { get; set; }
+            public string errorMessage { get; set; }
+            public List<AvailableProfile> availableProfile { get; set; }
+            public SelectedProfile selectedProfile { get; set; }
+        }
+
+        public GetRequest sendrequest(string name, string password)
+        {
+            SendRequest root = new SendRequest();
+            Agent ag = new Agent();
+
+            ag.name = "Minecraft";
+            ag.version = "1";
+
+            root.username = name;
+            root.password = password;
+            root.clientToken = getuuid();
+            root.agent = ag;
+
+            string send = JsonConvert.SerializeObject(root);
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/authenticate");
+
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            byte[] postBytes = Encoding.ASCII.GetBytes(send);
+
+            Stream requestStream = request.GetRequestStream();
+
+            Thread.Sleep(10);
+
+            requestStream.Write(postBytes, 0, postBytes.Length);
+            requestStream.Close();
+
+            try
+            {
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                string responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                GetRequest getreq = JsonConvert.DeserializeObject<GetRequest>(responseString);
+
+                return getreq;
+            }
+            catch
+            {
+                return null;
+
+            }
+        }
+
+        public class Logout
+        {
+            public string username { get; set; }
+            public string password { get; set; }
+        }
+
+        public void logout(string name, string pass)
+        {
+            Logout lout = new Logout();
+            lout.username = name;
+            lout.password = pass;
+
+            string send = JsonConvert.SerializeObject(lout);
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://authserver.mojang.com/authenticate");
+
+            request.Method = "POST";
+            request.ContentType = "application/json";
+
+            byte[] postBytes = Encoding.ASCII.GetBytes(send);
+
+            Stream requestStream = request.GetRequestStream();
+
+            requestStream.Write(postBytes, 0, postBytes.Length);
+            requestStream.Close();
+        }
+
         public string getuuid()
         {
-            string uuid = "";
+            Guid g = Guid.NewGuid();
+
+            string uuid = g.ToString();
 
             return uuid;
         }
+
     }
 }

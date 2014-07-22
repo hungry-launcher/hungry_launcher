@@ -178,5 +178,41 @@ namespace hungry_launcher.Properties {
                 this["chBox6"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox7 {
+            get {
+                return ((bool)(this["chBox7"]));
+            }
+            set {
+                this["chBox7"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool chBox8 {
+            get {
+                return ((bool)(this["chBox8"]));
+            }
+            set {
+                this["chBox8"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool logged {
+            get {
+                return ((bool)(this["logged"]));
+            }
+            set {
+                this["logged"] = value;
+            }
+        }
     }
 }

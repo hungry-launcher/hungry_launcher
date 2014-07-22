@@ -10,8 +10,6 @@ TO DO LIST:
 	  Security mode(all files are checked, make hash check);      
 
       Multi clients support; 
-
-      Licence/pirate mode;
 	  
 	  Smooth bar animation;	  
 	  
@@ -22,7 +20,5 @@ TO DO LIST:
 	  Faster downloading(async method);
 	  
 	  Full list of installed in launcher_profiles.json;
-	  
-	  Scrollbar for comboboxes[?];
 	  
       Another? 
